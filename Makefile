@@ -3,3 +3,8 @@ extract-spec:
 
 csv-spec-gz:
 	for f in **/*.wasm; do echo $$f,$$(wc -c < $$f),$$(wc -c < $$f.spec),$$(gzip -9 < $$f.spec | wc -c); done > specgz.csv
+
+# Depends on https://github.com/stellar/rs-stellar-xdr/pulls/394
+csv-spec-cbor:
+	for f in **/*.wasm; do echo $$f,$$(wc -c < $$f),$$(wc -c < $$f.spec),$$(stellar-xdr decode --type ScSpecEntry --input stream --output cbor < $$f.spec | wc -c); done > speccbor.csv
+
