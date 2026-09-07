@@ -1,0 +1,434 @@
+[
+  {
+    "function_v0": {
+      "doc": "Refreshes the cached USDC value of the adapter's Blend position to\\ninclude yield accrued since the last call. Permissionless: anyone can\\ncall it, and it should be called (by the vault or a keeper) before any\\n`total_assets()` read that will inform a deposit or withdrawal price,\\nsince `total_assets()` itself only returns the cached value rather than\\nquerying Blend live on every call.\\n\\nReads the adapter's current bToken balance from Blend's own ledger\\n(`get_positions`) rather than self-tracking it, so there is no risk of\\ndrift between the stored total and Blend's actual accounting.",
+      "name": "accrue",
+      "inputs": [],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "tuple": {
+                "value_types": []
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Called by the vault after transferring `amount` USDC to this adapter.\\nSupplies the USDC to the Blend lending pool as collateral and returns\\nthe real bTokens credited, measured from Blend's own ledger rather\\nthan assumed 1:1, so the vault's adapter-share accounting (`ADPT_SH`)\\ntracks genuine, appreciating shares instead of raw principal (#486).",
+      "name": "deposit",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Refreshes the cached total_assets to include yield accrued since the\\nlast call, satisfying the shared YieldAdapterInterface contract.\\nCurrently just calls accrue(), which remains a public,\\npermissionless entry point in its own right.\\n\\nPanics on failure rather than returning a Result: the shared adapter\\ninterface's refresh() has no error return, so propagating accrue()'s\\nResult would mean changing that interface's ABI across both adapters\\nand the vault's calls into them. Panicking here instead of silently\\ndiscarding the error preserves this function's pre-existing\\nfail-loud behaviour (accrue()'s storage read used to be a bare\\nunwrap(), which panicked directly) rather than downgrading a real\\nfailure into a silent no-op success.",
+      "name": "refresh",
+      "inputs": [],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns the Blend pool this adapter supplies to.",
+      "name": "get_pool",
+      "inputs": [],
+      "outputs": [
+        "address"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Called by the vault to redeem `shares` bTokens from the Blend pool.\\nBlend's own withdraw request is denominated in underlying USDC, not\\nbTokens, so `shares` is converted using the current `b_rate` before\\nsubmitting. Returns the USDC amount actually delivered to `recipient`,\\nmeasured directly rather than assumed to equal the request (#489).",
+      "name": "withdraw",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "shares",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "recipient",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Retained so the ABI of adapters already deployed from earlier WASM is\\nunchanged, and so an old adapter can still be initialized by hand.\\n\\nOn any adapter deployed from this WASM it is unreachable:\\n`__constructor` has already set `VAULT_KEY`, so every call returns\\n`AlreadyInitialized`. That is the intended behaviour, not a leftover.\\nAn attacker calling this against a freshly deployed adapter is\\nrejected instead of served.",
+      "name": "initialize",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "vault",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "pool",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "usdc",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "tuple": {
+                "value_types": []
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns \"blend\", identifying which protocol this adapter wraps.",
+      "name": "get_protocol",
+      "inputs": [],
+      "outputs": [
+        "symbol"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns the cached USDC value of the adapter's Blend position. Reflects\\nyield only as of the last `accrue()` call; call `accrue()` first for a\\nvalue that includes interest accrued since then.",
+      "name": "total_assets",
+      "inputs": [],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns the adapter's current bToken share balance, read directly from\\nBlend's ledger rather than self-tracked.",
+      "name": "total_shares",
+      "inputs": [],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Links the adapter to its vault, Blend pool, and USDC token.\\n\\nRuns inside the `CreateContract` host operation that deploys this\\nadapter, in the same transaction, so the adapter is never observable\\non-ledger in an uninitialized state.\\n\\nThis is what closes the front-running window in #505. `initialize()`\\nbelow has no authorization check by design (there is no deployer\\nidentity in storage yet to check against), so for as long as deploy\\nand initialize were two separate transactions, anyone watching the\\nledger could land `initialize()` first with their own address as\\n`vault`, becoming the only party able to move funds through the\\nadapter. Adding an auth check to `initialize()` would not have helped:\\nit would only prove the racer controls the address they chose to pass\\nin. Removing the intervening ledger is the fix.",
+      "name": "__constructor",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "vault",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "pool",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "usdc",
+          "type_": "address"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Request",
+      "fields": [
+        {
+          "doc": "",
+          "name": "address",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "request_type",
+          "type_": "u32"
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Reserve",
+      "fields": [
+        {
+          "doc": "",
+          "name": "asset",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "config",
+          "type_": {
+            "udt": {
+              "name": "ReserveConfig"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "data",
+          "type_": {
+            "udt": {
+              "name": "ReserveData"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "scalar",
+          "type_": "i128"
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Positions",
+      "fields": [
+        {
+          "doc": "",
+          "name": "collateral",
+          "type_": {
+            "map": {
+              "key_type": "u32",
+              "value_type": "i128"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "liabilities",
+          "type_": {
+            "map": {
+              "key_type": "u32",
+              "value_type": "i128"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "supply",
+          "type_": {
+            "map": {
+              "key_type": "u32",
+              "value_type": "i128"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ReserveData",
+      "fields": [
+        {
+          "doc": "",
+          "name": "b_rate",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "b_supply",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "backstop_credit",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "d_rate",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "d_supply",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "ir_mod",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "last_time",
+          "type_": "u64"
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ReserveConfig",
+      "fields": [
+        {
+          "doc": "",
+          "name": "c_factor",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "decimals",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "enabled",
+          "type_": "bool"
+        },
+        {
+          "doc": "",
+          "name": "index",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "l_factor",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "max_util",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "r_base",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "r_one",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "r_three",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "r_two",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "reactivity",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "supply_cap",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "util",
+          "type_": "u32"
+        }
+      ]
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ContractError",
+      "cases": [
+        {
+          "doc": "`initialize` was called on an adapter that already has a vault set.",
+          "name": "AlreadyInitialized",
+          "value": 1
+        },
+        {
+          "doc": "An intermediate arithmetic operation would overflow `i128`.",
+          "name": "Overflow",
+          "value": 2
+        },
+        {
+          "doc": "A state-mutating call was made before `initialize`.",
+          "name": "NotInitialized",
+          "value": 3
+        },
+        {
+          "doc": "A `checked_div` returned `None` because the divisor was zero.\\nDistinct from `Overflow`: this points to a degenerate adapter state\\n(e.g. a zero `b_rate` from a broken Blend pool) rather than a genuine\\narithmetic overflow.",
+          "name": "DivisionByZero",
+          "value": 4
+        }
+      ]
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "AdapterError",
+      "cases": [
+        {
+          "doc": "`initialize` was called on an adapter that already has a vault set.",
+          "name": "AlreadyInitialized",
+          "value": 1
+        }
+      ]
+    }
+  }
+]

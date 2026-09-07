@@ -1,0 +1,737 @@
+[
+  {
+    "function_v0": {
+      "doc": "Deposit `amount` USDC into the vault. USDC is forwarded to the yield\\nadapter, which deploys it to the underlying protocol.\\n\\nReturns the number of mUSDC shares minted to the caller.",
+      "name": "deposit",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "caller",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "min_shares_out",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "i128",
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Withdraw by burning `shares` mUSDC. Returns the USDC amount sent back\\nto the caller.\\n\\n`min_usdc_out` is a caller-supplied slippage floor. If the computed\\nUSDC output falls below this value the transaction reverts with\\n`MinAmountOutNotMet`, giving the caller a predictable, typed failure\\nrather than an opaque `WithdrawalTooSmall`. Pass `0` to opt out of the\\nfloor (behaviour is then identical to the pre-guard contract).\\n\\nThis guards against ratio-shifting: a concurrent withdrawal by another\\ndepositor changes the shared `ADPT_SH/TOTAL_SH` ratio before this\\ntransaction lands, silently shrinking the payout. With `min_usdc_out`\\nthe caller can bound how much shrinkage they are willing to accept.",
+      "name": "withdraw",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "caller",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "shares",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "min_usdc_out",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "i128",
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns the current admin address.",
+      "name": "get_admin",
+      "inputs": [],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "address",
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns whether deposits are currently paused.",
+      "name": "is_paused",
+      "inputs": [],
+      "outputs": [
+        "bool"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Retained so the ABI of vaults already deployed from earlier WASM is\\nunchanged, and so an old vault can still be initialized by hand.\\n\\nOn any vault deployed from this WASM it is unreachable: `__constructor`\\nhas already set `ADMIN`, so every call returns `AlreadyInitialized`.\\nThat is the intended behavior, not a leftover. An attacker calling\\nthis against a freshly deployed vault is rejected instead of served.",
+      "name": "initialize",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "usdc",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "musdc",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "adapter",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "tuple": {
+                "value_types": []
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Admin-only emergency switch. While paused, new deposits are rejected.\\nWithdrawals are deliberately left open so a pause can never trap funds.",
+      "name": "set_paused",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "paused",
+          "type_": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "tuple": {
+                "value_types": []
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns the current adapter address.",
+      "name": "get_adapter",
+      "inputs": [],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "address",
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Called by the mUSDC token contract immediately after it moves a\\ntransfer's balances, splitting `Principal`/`Entry` pro-rata between\\nsender and receiver (#578) \\xe2\\x80\\x94 the fix for the honest-`0` degradation\\ndocumented on `get_principal`/`get_entry_time`, from back when mUSDC\\nwas a plain Stellar Asset Contract with no hook for the vault to\\nobserve a transfer at all.\\n\\nRequires the mUSDC token's own `require_auth()`, which succeeds only\\nwhen mUSDC is the *direct* caller of this exact invocation \\xe2\\x80\\x94 Soroban\\ntreats a contract's own direct sub-calls as inherently authorized by\\nthat contract, with no signature needed (see\\n`Env::authorize_as_current_contract`'s doc comment: \"All the direct\\ncalls that the current contract performs are always considered to\\nhave been authorized\"). This can therefore never be triggered by\\nanything other than a genuine transfer on the one real, configured\\nmUSDC contract \\xe2\\x80\\x94 the same direction-reversed pattern\\n`adapter-common::require_vault_auth` already uses for every adapter\\nto verify a call ",
+      "name": "on_transfer",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "from",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "to",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "sender_balance_before",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "receiver_balance_before",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "tuple": {
+                "value_types": []
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Replace the yield adapter. The vault must have no shares outstanding\\n(`TOTAL_SH == 0`) *and* no position left at the old adapter\\n(`ADPT_SH == 0`) before calling this.\\n\\nChecking `TOTAL_SH` alone is not sufficient: the two counters can\\ndesync (see `migrate_adapter`'s `NoAdapterPosition` doc), so a vault\\nthat looks empty by `TOTAL_SH` can still have real value sitting at\\nthe old adapter. Deliberately does *not* reset `ADPT_SH` to zero on\\nswap the way it used to -- doing so would destroy the only evidence\\nthat a stranded position existed, and it is unnecessary: `ADPT_SH`\\nis only ever nonzero here in a genuinely-empty vault as a result of a\\nbug, and clearing it would delete the observability that bug needs\\nto be diagnosed, not fix it. In the normal case (both counters\\nalready zero) leaving `ADPT_SH` alone is a no-op.",
+      "name": "set_adapter",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_adapter",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "tuple": {
+                "value_types": []
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Completes a pending admin handover. Requires the nominee's own\\n`require_auth()`, not the current admin's, so the transfer can only\\ncomplete once the new address has demonstrably proven it controls a\\nworking signing key. Fails with `NoPendingAdmin` if no\\n`transfer_admin` nomination is outstanding.",
+      "name": "accept_admin",
+      "inputs": [],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "tuple": {
+                "value_types": []
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns the address's mUSDC share balance, read from the share token\\nitself. mUSDC received by transfer counts immediately and withdraws\\nnormally, exactly like minted shares; there is no separate vault-side\\nbalance that could disagree with the token.\\n\\nReturns 0 before `initialize`, rather than erroring: this is a view\\nused by dashboards, and \"no position\" is the truthful answer for a\\nvault that holds nothing yet.",
+      "name": "get_position",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "address",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns the address's cost basis: the net USDC it deposited and has not\\nyet withdrawn. Yield earned is current share value minus this value.\\n\\nCost basis is history, not a holding, so unlike the share balance it\\ncannot be derived from the token on its own \\xe2\\x80\\x94 but as of #578, mUSDC is\\na custom SEP-41 token the vault controls the code of (not a plain\\nStellar Asset Contract), so its `transfer`/`transfer_from` call back\\ninto `on_transfer`, which splits a sender's basis and hands the\\npro-rata share to the receiver at the moment of transfer. See\\n`on_transfer`'s doc comment for the split math.\\n\\nAn address that transferred its entire position away reports `0`\\nhere because it holds nothing, rather than a stale basis for shares\\nit no longer has \\xe2\\x80\\x94 `on_transfer` clears both records itself the\\nmoment a full transfer-out reaches zero.\\n\\nLike `get_entry_time`, the self-heal below (clearing a zero-position\\nholder's leftover record) should be unreachable in the current\\nsystem; it's kept as a defensive fallback, and as a bridg",
+      "name": "get_principal",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "address",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Sets the admin, USDC token address, mUSDC share token address, and\\nthe initial yield adapter address, inside the deploying transaction's\\nown `CreateContract` operation. Unlike a separate `initialize()` call,\\nthere is no intervening ledger where an attacker could land a\\nself-authorized call first: the deployer's transaction is the only\\none that can ever set this contract's state (#551, same bug class as\\n#505, fixed for the adapters/mUSDC in #550).\\n\\nUnlike the adapters/mUSDC's constructor arguments, `admin` is a\\nhuman-held key, not a programmatically-derived contract address, so\\n`require_auth()` is called on it here too: without it, `DEPLOYER`\\nalone could set any address as admin with no proof it is controlled\\nby anyone, permanently bricking the vault on a typo (`transfer_admin`/\\n`accept_admin` both require the *current* admin's own signature to\\nmove away from it). Soroban only honors `require_auth()` inside a\\nconstructor for the address that is the deploying transaction's own\\nsource account, so this requires `",
+      "name": "__constructor",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "usdc",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "musdc",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "adapter",
+          "type_": "address"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns the ledger timestamp of the address's deposit, or 0 if it holds\\nno position. Reset whenever the position is fully withdrawn.\\n\\nEntry time belongs to a depositor, not to the shares: it is recorded\\nwhen an address first deposits, and now (#578) is also split\\npro-rata on a transfer by `on_transfer` \\xe2\\x80\\x94 see that function's doc\\ncomment for the split math. An address holding no mUSDC reports 0\\neven if it deposited earlier and later transferred everything away,\\nso a record left behind by a full transfer-out is never reported as\\na live position.\\n\\n`on_transfer` clears a sender's record itself the moment a full\\ntransfer-out reaches zero, so a leftover record found here should be\\nunreachable in the current system; this self-heal is kept as a\\ndefensive fallback for any balance that reached zero another way\\nthis contract doesn't yet account for (and for state left behind by\\nmUSDC's pre-#578 life as a plain Stellar Asset Contract with no\\ntransfer hook at all, before a live-holder migration if one hasn't\\nrun yet). Cl",
+      "name": "get_entry_time",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "address",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        "u64"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Admin-only: nominate `new_admin` as the next admin. Requires the\\ncurrent admin's `require_auth()`. Does not itself change who the\\nadmin is \\xe2\\x80\\x94 that only happens once the nominee calls `accept_admin`\\nwith their own signature, so a typo'd or unreachable address can\\nnever brick admin: the old admin stays in control until a working\\nkey on the other end proves it can sign. Overwrites any prior,\\nnot-yet-accepted nomination.",
+      "name": "transfer_admin",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_admin",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "tuple": {
+                "value_types": []
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Phase 1 of a two-phase migration, and the trigger for\\n`MIN_LEDGER_GAP`'s ~1-day timelock. Snapshots the target adapter's\\n`total_assets()` and the current ledger sequence so that a later\\n`migrate_adapter` call can verify the valuation has been stable for\\nat least `MIN_LEDGER_GAP` ledgers. This prevents an observer from\\ngriefing or masking a migration by front-running a\\ntransiently-shifted valuation (issue #567), and separately gives\\nobservers or automated monitoring a real window to notice and react\\nto a migration triggered by a compromised admin key before it can\\nexecute (issue #557) \\xe2\\x80\\x94 the same unattended signer used for routine\\nmigration-keeper operations can call this function, so the delay\\nitself is the only thing standing between a leaked key and the\\nvault's entire position moving to an address the attacker\\ncontrols.\\n\\nCan be called repeatedly for the same or different adapters; each\\ncall overwrites the previous snapshot. The admin must then wait for\\nthe ledger gap to elapse before calling `migrate_adapt",
+      "name": "begin_migration",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_adapter",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "tuple": {
+                "value_types": []
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Phase 2 of a two-phase migration. Must be preceded by\\n`begin_migration(new_adapter)` and at least `MIN_LEDGER_GAP`\\nledgers must have elapsed. Moves the vault's entire position from\\nthe current adapter to `new_adapter` in one atomic transaction,\\nwithout requiring depositors to withdraw first. Unlike\\n`set_adapter`, this is safe to call with shares outstanding.\\n\\nWithdraws everything from the old adapter into the vault, deposits\\nit into `new_adapter`, and performs two independent checks:\\n\\n1. **Slippage**: `new_adapter.total_assets()` must be at least\\n`(10_000 - max_slippage_bps) / 10_000` of the old adapter's\\npre-migration value.\\n\\n2. **Stability**: `new_adapter.total_assets()` must be at least\\n`(10_000 - max_slippage_bps) / 10_000` of the snapshot value\\nrecorded by `begin_migration`, proving the valuation has been\\nstable across the ledger-gap cooldown.\\n\\nIf either check fails the whole call reverts and nothing moves\\n(Soroban transactions are atomic). On success the snapshot is\\ncleared. `TOTAL_SH`, every holder's m",
+      "name": "migrate_adapter",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_adapter",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "max_slippage_bps",
+          "type_": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "tuple": {
+                "value_types": []
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Total USDC value managed by the vault as reported by the adapter.\\nIncludes yield accrued by the underlying protocol.",
+      "name": "get_total_assets",
+      "inputs": [],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "i128",
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns total mUSDC shares outstanding.",
+      "name": "get_total_shares",
+      "inputs": [],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns the pending admin nominee, if any.",
+      "name": "get_pending_admin",
+      "inputs": [],
+      "outputs": [
+        {
+          "option": {
+            "value_type": "address"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Permissionless entry point that extends the TTL of instance storage\\nand the position records for `address`. Anyone can call it, so\\noff-chain keepers or the user themselves can keep a position alive\\nwithout needing a signature on the vault.",
+      "name": "extend_position_ttl",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "address",
+          "type_": "address"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns the current migration snapshot, if one has been recorded by\\n`begin_migration`. Off-chain callers can use this to verify the\\ncooldown is progressing.",
+      "name": "get_migration_snapshot",
+      "inputs": [],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "udt": {
+                "name": "MigrationSnapshot"
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "ContractError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "Typed error codes returned by fallible contract entry points. Callers and\\noff-chain indexers can match on the variant instead of parsing panic\\nstrings, and the numeric discriminant is stable across ABI changes.",
+      "lib": "",
+      "name": "ContractError",
+      "cases": [
+        {
+          "doc": "`initialize` was called on a contract that already has an admin set.",
+          "name": "AlreadyInitialized",
+          "value": 1
+        },
+        {
+          "doc": "A state-mutating call was made before `initialize`.",
+          "name": "NotInitialized",
+          "value": 2
+        },
+        {
+          "doc": "`deposit` was called while `set_paused(true)` is in effect.",
+          "name": "DepositsPaused",
+          "value": 3
+        },
+        {
+          "doc": "`deposit` or `withdraw` was called with a non-positive amount/share count.",
+          "name": "ZeroAmount",
+          "value": 4
+        },
+        {
+          "doc": "The deposited amount rounds down to zero shares at the current price.",
+          "name": "DepositTooSmall",
+          "value": 5
+        },
+        {
+          "doc": "`withdraw` was called while the vault has no shares outstanding.",
+          "name": "NoSharesOutstanding",
+          "value": 6
+        },
+        {
+          "doc": "The caller does not hold enough mUSDC shares to burn.",
+          "name": "InsufficientShares",
+          "value": 7
+        },
+        {
+          "doc": "The shares burned round down to zero USDC at the current price.",
+          "name": "WithdrawalTooSmall",
+          "value": 8
+        },
+        {
+          "doc": "An intermediate arithmetic operation would overflow `i128`.",
+          "name": "Overflow",
+          "value": 9
+        },
+        {
+          "doc": "`set_adapter` was called while the vault still has shares outstanding\\n(`TOTAL_SH > 0`) or the old adapter still holds a position\\n(`ADPT_SH > 0`). The two counters can desync (see `migrate_adapter`'s\\n`NoAdapterPosition` doc), so both are checked: `TOTAL_SH` alone is not\\nsufficient evidence that the old adapter is actually empty.",
+          "name": "AdapterSwapUnsafe",
+          "value": 10
+        },
+        {
+          "doc": "`migrate_adapter` was called with the vault's current adapter as the\\ntarget.",
+          "name": "SameAdapter",
+          "value": 11
+        },
+        {
+          "doc": "`migrate_adapter`'s post-migration value fell outside the caller's\\n`max_slippage_bps` tolerance of the pre-migration value.",
+          "name": "MigrationValueDrift",
+          "value": 12
+        },
+        {
+          "doc": "`migrate_adapter` was called while the vault's current adapter has no\\nposition to migrate. Distinct from `NoSharesOutstanding`: this checks\\n`ADPT_SH` (adapter-side shares), not `TOTAL_SH` (vault mUSDC shares),\\nand the two can desync.",
+          "name": "NoAdapterPosition",
+          "value": 13
+        },
+        {
+          "doc": "`migrate_adapter` was called with `max_slippage_bps > 10_000`.",
+          "name": "InvalidSlippageBps",
+          "value": 14
+        },
+        {
+          "doc": "`withdraw` was called with a `min_usdc_out` floor and the actual\\namount out fell below it. Distinct from `WithdrawalTooSmall` (which\\nfires when `usdc_out` rounds to zero): this fires when `usdc_out > 0`\\nbut the caller's slippage tolerance was not met \\xe2\\x80\\x94 i.e. the\\nADPT_SH/TOTAL_SH ratio shifted between when the caller estimated\\ntheir proceeds and when their transaction landed.",
+          "name": "MinAmountOutNotMet",
+          "value": 15
+        },
+        {
+          "doc": "`accept_admin` was called with no pending nominee recorded (no\\n`transfer_admin` call has happened, or a previous nomination was\\nalready accepted).",
+          "name": "NoPendingAdmin",
+          "value": 16
+        },
+        {
+          "doc": "The adapter reported zero or negative total assets while the vault\\nstill has shares outstanding, indicating a broken adapter or\\nmalformed protocol response. Depositing would dilute all existing\\nholders.",
+          "name": "AdapterReportedNoAssets",
+          "value": 17
+        },
+        {
+          "doc": "`deposit` output fell below caller-specified minimum bound (`min_shares_out`).",
+          "name": "SlippageExceeded",
+          "value": 18
+        },
+        {
+          "doc": "`migrate_adapter` was called without a prior `begin_migration`\\ncall for the same target adapter.",
+          "name": "MigrationNotInitialized",
+          "value": 19
+        },
+        {
+          "doc": "`migrate_adapter` was called before the minimum ledger-gap\\ncooldown since `begin_migration` had elapsed.",
+          "name": "MigrationCooldownNotMet",
+          "value": 20
+        },
+        {
+          "doc": "The new adapter's `total_assets()` drifted too far from the\\nsnapshot recorded by `begin_migration`, indicating possible\\nmanipulation or instability.",
+          "name": "MigrationStabilityDrift",
+          "value": 21
+        },
+        {
+          "doc": "`begin_migration` was called against a target adapter reporting a\\nnegative `total_assets()`. A negative snapshot value defeats the\\nstability check it feeds: the tolerance-scaled floor stays negative\\ntoo, so any non-negative pre-deposit balance clears it regardless of\\nhow much the target is drained during the cooldown.",
+          "name": "MigrationSnapshotAssetsInvalid",
+          "value": 22
+        },
+        {
+          "doc": "`deposit`'s adapter call returned zero or negative shares credited,\\nindicating the underlying protocol rejected or dropped the deposit.\\nMinting vault shares against it would dilute every existing holder\\nwith nothing backing the new shares.",
+          "name": "AdapterCreditedNothing",
+          "value": 23
+        },
+        {
+          "doc": "A `checked_div` returned `None` because the divisor was zero.\\nDistinct from `Overflow`: this points to a degenerate adapter state\\n(e.g. zero `total_assets`) rather than a genuine arithmetic overflow.",
+          "name": "DivisionByZero",
+          "value": 24
+        }
+      ]
+    }
+  },
+  {
+    "udt_union_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "DataKey",
+      "cases": [
+        {
+          "tuple_v0": {
+            "doc": "",
+            "name": "Entry",
+            "type_": [
+              "address"
+            ]
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "",
+            "name": "Principal",
+            "type_": [
+              "address"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "A snapshot of the target adapter's valuation, recorded by\\n`begin_migration` and verified by `migrate_adapter` after a minimum\\nledger-gap cooldown.",
+      "lib": "",
+      "name": "MigrationSnapshot",
+      "fields": [
+        {
+          "doc": "",
+          "name": "adapter",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "ledger_seq",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "total_assets",
+          "type_": "i128"
+        }
+      ]
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "AdapterError",
+      "cases": [
+        {
+          "doc": "`initialize` was called on an adapter that already has a vault set.",
+          "name": "AlreadyInitialized",
+          "value": 1
+        }
+      ]
+    }
+  }
+]
