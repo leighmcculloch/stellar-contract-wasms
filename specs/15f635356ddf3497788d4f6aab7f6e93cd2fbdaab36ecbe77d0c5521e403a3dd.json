@@ -1,0 +1,382 @@
+[
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "WasmHashes",
+      "fields": [
+        {
+          "doc": "",
+          "name": "intent_registry",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "policy_engine",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "recovery_manager",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "smart_account",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "split_adapter",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "transfer_adapter",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Initialized",
+      "prefix_topics": [
+        "init"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address",
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "DeployedAccount",
+      "fields": [
+        {
+          "doc": "",
+          "name": "intent_registry",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "policy_engine",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "recovery_manager",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "smart_account",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "split_adapter",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "transfer_adapter",
+          "type_": "address"
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "AccountDeployed",
+      "prefix_topics": [
+        "deployed"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "caller",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "smart_account",
+          "type_": "address",
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "initialize",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "wasm_hashes",
+          "type_": {
+            "udt": {
+              "name": "WasmHashes"
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "AccountFactoryError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "WasmHashesUpdated",
+      "prefix_topics": [
+        "wasm_set"
+      ],
+      "params": [],
+      "data_format": "map"
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "AccountFactoryError",
+      "cases": [
+        {
+          "doc": "",
+          "name": "AlreadyInitialized",
+          "value": 10000
+        },
+        {
+          "doc": "",
+          "name": "NotInitialized",
+          "value": 10001
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "contract_name",
+      "inputs": [],
+      "outputs": [
+        "symbol"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Deploys and wires a complete, ready-to-use treasury stack in one\\ncall. See the module doc comment for the authorization model and\\nwhat \"ready to use\" means (adapters already bound, no timelock;\\n`intent_registry` already initialized).\\n\\n`salt` only needs to be unique per `caller` \\xe2\\x80\\x94 sub-contract addresses\\nare derived from `sha256(caller || salt || per-contract tag)`, so one\\ncaller-chosen salt is enough to place all six deployments\\ndeterministically and collision-free against each other, and two\\ndifferent callers can safely choose the identical raw salt value\\nwith no cross-caller collision or squatting risk (see `sub_salt`'s\\ndoc comment for the security review finding this closed).\\n\\n`executor` is `intent_registry`'s scheduled-payment relayer address\\n(see `smart_account::initialize`'s doc comment on `initial_executor`\\nfor why this needs to be explicit rather than defaulted). Pass\\n`caller` again if there is no separate relayer identity yet.",
+      "name": "deploy_account",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "caller",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "salt",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "initial_signers",
+          "type_": {
+            "vec": {
+              "element_type": {
+                "udt": {
+                  "name": "Signer"
+                }
+              }
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "initial_policies",
+          "type_": {
+            "map": {
+              "key_type": "address",
+              "value_type": "val"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "guardian_threshold",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "executor",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "udt": {
+                "name": "DeployedAccount"
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "AccountFactoryError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_wasm_hashes",
+      "inputs": [],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "udt": {
+                "name": "WasmHashes"
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "AccountFactoryError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Updates the WASM hashes used for every *future* `deploy_account`\\ncall. Admin-gated and deliberately mutable \\xe2\\x80\\x94 unlike `smart_account`'s\\nown pinned subordinate-module addresses (which protect one already\\n-deployed treasury's established trust), this only ever affects\\ntreasuries deployed *after* the update; already-deployed treasuries\\nare unaffected, since their addresses were already fixed at their\\nown deploy time. Shared infrastructure code getting patched over\\ntime is the ordinary case, not a residual risk to name.",
+      "name": "set_wasm_hashes",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "wasm_hashes",
+          "type_": {
+            "udt": {
+              "name": "WasmHashes"
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "AccountFactoryError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Permissionless TTL maintenance \\xe2\\x80\\x94 extending TTL creates no authority,\\nmatching the reasoning already used by every other contract in this\\nworkspace (`docs/TECHNICAL_ARCHITECTURE.md` \\xc2\\xa716.1).",
+      "name": "extend_instance_ttl",
+      "inputs": [],
+      "outputs": []
+    }
+  },
+  {
+    "udt_union_v0": {
+      "doc": "Represents different types of signers in the smart account system.",
+      "lib": "",
+      "name": "Signer",
+      "cases": [
+        {
+          "tuple_v0": {
+            "doc": "A delegated signer that uses built-in signature verification.",
+            "name": "Delegated",
+            "type_": [
+              "address"
+            ]
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "An external signer with custom verification logic.\\nContains the verifier contract address and the public key data.",
+            "name": "External",
+            "type_": [
+              "address",
+              "bytes"
+            ]
+          }
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,497 @@
+[
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "AssetRule",
+      "fields": [
+        {
+          "doc": "",
+          "name": "enabled",
+          "type_": "bool"
+        },
+        {
+          "doc": "",
+          "name": "max_single_transfer",
+          "type_": "i128"
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "PolicyCheck",
+      "fields": [
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "asset",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "destination",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "expected_version",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "operation",
+          "type_": "symbol"
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Initialized",
+      "prefix_topics": [
+        "init"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address",
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "version",
+      "inputs": [],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "u32",
+            "error_type": {
+              "udt": {
+                "name": "PolicyEngineError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Permissionless TTL maintenance. `Initialized`/`Admin`/`Version` live\\nin instance storage (one shared TTL, refreshed automatically by\\n`ensure_initialized` on every call that reaches it \\xe2\\x80\\x94 see that\\nfunction) and are covered by the single `extend_ttl` call below;\\n`assets`/`recipients`/`operations` are named, already-existing\\nper-entity persistent entries, extended individually the same way\\nthey always were. Extending TTL does not create authority or alter\\nexecution semantics (`docs/TECHNICAL_ARCHITECTURE.md` \\xc2\\xa716.1), so\\nthis is intentionally open to any caller \\xe2\\x80\\x94 an off-chain monitor can\\nrefresh the entries it knows are still active without needing admin\\nkeys.",
+      "name": "extend_ttl",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "assets",
+          "type_": {
+            "vec": {
+              "element_type": "address"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "recipients",
+          "type_": {
+            "vec": {
+              "element_type": "address"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "operations",
+          "type_": {
+            "vec": {
+              "element_type": "symbol"
+            }
+          }
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "initialize",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PolicyEngineError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "PolicyValidated",
+      "prefix_topics": [
+        "pol_ok"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "operation",
+          "type_": "symbol",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "asset",
+          "type_": "address",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "destination",
+          "type_": "address",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "expected_version",
+          "type_": "u32",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "AssetRuleUpdated",
+      "prefix_topics": [
+        "asset"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "asset",
+          "type_": "address",
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "PolicyEngineError",
+      "cases": [
+        {
+          "doc": "",
+          "name": "AlreadyInitialized",
+          "value": 2000
+        },
+        {
+          "doc": "",
+          "name": "NotInitialized",
+          "value": 2001
+        },
+        {
+          "doc": "",
+          "name": "InvalidAmount",
+          "value": 2002
+        },
+        {
+          "doc": "",
+          "name": "AssetNotAllowed",
+          "value": 2003
+        },
+        {
+          "doc": "",
+          "name": "RecipientNotAllowed",
+          "value": 2004
+        },
+        {
+          "doc": "",
+          "name": "AmountAboveLimit",
+          "value": 2005
+        },
+        {
+          "doc": "",
+          "name": "VersionMismatch",
+          "value": 2006
+        },
+        {
+          "doc": "",
+          "name": "InvalidVersion",
+          "value": 2007
+        },
+        {
+          "doc": "",
+          "name": "OperationNotAllowed",
+          "value": 2008
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "bump_version",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "next_version",
+          "type_": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PolicyEngineError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "contract_name",
+      "inputs": [],
+      "outputs": [
+        "symbol"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "set_asset_rule",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "asset",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "rule",
+          "type_": {
+            "udt": {
+              "name": "AssetRule"
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PolicyEngineError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "PolicyVersionBumped",
+      "prefix_topics": [
+        "policy"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "next_version",
+          "type_": "u32",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "validate_policy",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "check",
+          "type_": {
+            "udt": {
+              "name": "PolicyCheck"
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PolicyEngineError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "OperationAllowedUpdated",
+      "prefix_topics": [
+        "op"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "operation",
+          "type_": "symbol",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "allowed",
+          "type_": "bool",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "RecipientAllowedUpdated",
+      "prefix_topics": [
+        "rcpt"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "recipient",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "allowed",
+          "type_": "bool",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Enables or disables an adapter-level operation (e.g. `transfer`,\\n`split`). An operation not explicitly enabled fails closed, so\\ndeploying a new adapter never silently grants it spend authority.",
+      "name": "set_operation_allowed",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "operation",
+          "type_": "symbol"
+        },
+        {
+          "doc": "",
+          "name": "allowed",
+          "type_": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PolicyEngineError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "set_recipient_allowed",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "recipient",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "allowed",
+          "type_": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PolicyEngineError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+]

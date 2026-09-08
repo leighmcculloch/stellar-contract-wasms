@@ -1,0 +1,1017 @@
+[
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Initialized",
+      "prefix_topics": [
+        "init"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "guardian_threshold",
+          "type_": "u32",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "GuardianAdded",
+      "prefix_topics": [
+        "guard"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "activates_at",
+          "type_": "u32",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "RecoveryOpened",
+      "prefix_topics": [
+        "open"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "request_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "Security review finding: recovery originally only ever replaced\\n`Ownable`'s `owner` \\xe2\\x80\\x94 but day-to-day spend authority on `smart_account`\\nis the OZ context-rule/signer registry, a completely separate\\nauthorization system `owner` does not gate at all (see\\n`docs/GOVERNANCE_MULTISIG_DESIGN.md` \\xc2\\xa79). A compromised *payment\\nsigner* \\xe2\\x80\\x94 the more likely operational compromise, not the owner key \\xe2\\x80\\x94\\nsurvived recovery entirely: the account unfroze, ownership changed, and\\nthe same compromised signer could still call `execute_transfer_payment`\\nimmediately afterward. `docs/TECHNICAL_ARCHITECTURE.md` \\xc2\\xa712.7 already\\ndocumented the intended behavior (\"Old signers and sessions are\\ncleared. New signers are installed.\") \\xe2\\x80\\x94 this had never actually been\\nimplemented. `replacement_signers`/`replacement_policies` carry what\\n`smart_account::apply_recovery` installs as the account's *only*\\ncontext rule once finalized, replacing every existing one \\xe2\\x80\\x94 see that\\nfunction's doc comment for why replacing rather than merely adding is\\nnece",
+      "lib": "",
+      "name": "RecoveryRequest",
+      "fields": [
+        {
+          "doc": "",
+          "name": "approvers",
+          "type_": {
+            "vec": {
+              "element_type": "address"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "cancelled",
+          "type_": "bool"
+        },
+        {
+          "doc": "",
+          "name": "earliest_ledger",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "finalized",
+          "type_": "bool"
+        },
+        {
+          "doc": "",
+          "name": "replacement_owner",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "replacement_policies",
+          "type_": {
+            "map": {
+              "key_type": "address",
+              "value_type": "val"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "replacement_signers",
+          "type_": {
+            "vec": {
+              "element_type": {
+                "udt": {
+                  "name": "Signer"
+                }
+              }
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "request_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "GuardianRemoved",
+      "prefix_topics": [
+        "unguard"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address",
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "RecoveryApproved",
+      "prefix_topics": [
+        "appr"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "request_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address",
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ThresholdChanged",
+      "prefix_topics": [
+        "thresh"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "new_threshold",
+          "type_": "u32",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "RecoveryCancelled",
+      "prefix_topics": [
+        "cancel"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "request_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "RecoveryFinalized",
+      "prefix_topics": [
+        "final"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "request_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "replacement_owner",
+          "type_": "address",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Permissionless TTL maintenance for named, already-existing guardians\\nand requests \\xe2\\x80\\x94 extending TTL creates no authority (\\xc2\\xa716.1). Also\\ncovers any pending threshold change and any pending removal for the\\ngiven guardians: those are only bumped otherwise at `propose_*` time,\\nso a proposal left unapplied long enough after its delay elapses\\ncould archive before `apply_*` is ever called, silently losing an\\nalready-authorized governance action rather than just delaying it\\n(independent security review finding). `bump_ttl` no-ops on keys\\nthat don't exist, so calling this with no pending changes is safe.\\n`Initialized`/`Admin`/`GuardianThreshold`/`PendingGuardianThreshold`\\nlive in instance storage (one shared TTL, refreshed automatically by\\n`ensure_initialized` on every call that reaches it), so a single\\n`extend_ttl` call below covers all of them together.",
+      "name": "extend_ttl",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "guardians",
+          "type_": {
+            "vec": {
+              "element_type": "address"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "request_ids",
+          "type_": {
+            "vec": {
+              "element_type": {
+                "bytes_n": {
+                  "n": 32
+                }
+              }
+            }
+          }
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "initialize",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "guardian_threshold",
+          "type_": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "is_guardian",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        "bool"
+      ]
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "RecoveryManagerError",
+      "cases": [
+        {
+          "doc": "",
+          "name": "AlreadyInitialized",
+          "value": 4000
+        },
+        {
+          "doc": "",
+          "name": "NotInitialized",
+          "value": 4001
+        },
+        {
+          "doc": "",
+          "name": "InvalidThreshold",
+          "value": 4002
+        },
+        {
+          "doc": "",
+          "name": "GuardianAlreadyExists",
+          "value": 4003
+        },
+        {
+          "doc": "",
+          "name": "GuardianNotFound",
+          "value": 4004
+        },
+        {
+          "doc": "",
+          "name": "RequestAlreadyExists",
+          "value": 4005
+        },
+        {
+          "doc": "",
+          "name": "RequestNotFound",
+          "value": 4006
+        },
+        {
+          "doc": "",
+          "name": "DuplicateApproval",
+          "value": 4007
+        },
+        {
+          "doc": "",
+          "name": "BelowThreshold",
+          "value": 4008
+        },
+        {
+          "doc": "",
+          "name": "TimelockActive",
+          "value": 4009
+        },
+        {
+          "doc": "",
+          "name": "RequestCancelled",
+          "value": 4010
+        },
+        {
+          "doc": "",
+          "name": "RequestFinalized",
+          "value": 4011
+        },
+        {
+          "doc": "",
+          "name": "TooManyApprovers",
+          "value": 4012
+        },
+        {
+          "doc": "",
+          "name": "DelayTooShort",
+          "value": 4013
+        },
+        {
+          "doc": "",
+          "name": "GuardianNotYetActive",
+          "value": 4014
+        },
+        {
+          "doc": "",
+          "name": "Unauthorized",
+          "value": 4015
+        },
+        {
+          "doc": "",
+          "name": "NoPendingGuardianRemoval",
+          "value": 4016
+        },
+        {
+          "doc": "",
+          "name": "NoPendingThresholdChange",
+          "value": 4017
+        },
+        {
+          "doc": "",
+          "name": "GuardianChangeDelayNotElapsed",
+          "value": 4018
+        },
+        {
+          "doc": "",
+          "name": "GuardianFreezeEpochOverflow",
+          "value": 4019
+        },
+        {
+          "doc": "",
+          "name": "NoReplacementSigners",
+          "value": 4020
+        },
+        {
+          "doc": "",
+          "name": "ThresholdWouldBecomeUnsatisfiable",
+          "value": 4021
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Registers a guardian. The guardian is recorded immediately\\n(`is_guardian` reflects it right away), but its approval does not\\ncount toward any threshold until `GUARDIAN_ACTIVATION_DELAY_LEDGERS`\\nhave passed \\xe2\\x80\\x94 see the constant's doc comment for why. Removing a\\nguardian, unlike adding one, is itself timelocked \\xe2\\x80\\x94 see\\n`propose_remove_guardian`.",
+      "name": "add_guardian",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "contract_name",
+      "inputs": [],
+      "outputs": [
+        "symbol"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Opens a recovery request. Callable by `admin`/owner **or by any\\ncurrently-active guardian** \\xe2\\x80\\x94 this is a deliberate fix, not the\\noriginal design: requiring the admin's own authorization to open a\\nrecovery request means recovery is unusable in exactly the scenario\\nit exists for (the owner's key is lost or destroyed, not merely\\n\"compromised but still controllable by its holder\"). A guardian who\\nsuspects the owner is compromised, or who is trying to help an owner\\nwho has genuinely lost access, can start the process unassisted;\\n`approve_recovery`'s threshold and `finalize_recovery`'s timelock\\nare what actually gate the outcome, not who was allowed to open the\\nrequest.\\n\\n`replacement_signers`/`replacement_policies` must describe a\\nsatisfiable context rule (at least one signer or one policy) \\xe2\\x80\\x94 see\\n`RecoveryRequest`'s doc comment for why recovery needs to carry\\nthis at all, not just `replacement_owner`. Rejected fast, here, if\\n`replacement_signers` is empty, rather than letting a genuinely\\nunsatisfiable recovery r",
+      "name": "open_recovery",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "caller",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "request_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "replacement_owner",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "replacement_signers",
+          "type_": {
+            "vec": {
+              "element_type": {
+                "udt": {
+                  "name": "Signer"
+                }
+              }
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "replacement_policies",
+          "type_": {
+            "map": {
+              "key_type": "address",
+              "value_type": "val"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "earliest_ledger",
+          "type_": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "request_status",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "request_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "udt": {
+                "name": "RecoveryRequest"
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "cancel_recovery",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "request_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "GuardianFreezeRequested",
+      "prefix_topics": [
+        "gfreeze"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address",
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "GuardianRemovalProposed",
+      "prefix_topics": [
+        "unguardp"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "effective_ledger",
+          "type_": "u32",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ThresholdChangeProposed",
+      "prefix_topics": [
+        "threshp"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "new_threshold",
+          "type_": "u32",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "effective_ledger",
+          "type_": "u32",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "approve_recovery",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "request_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "GuardianRemovalCancelled",
+      "prefix_topics": [
+        "unguardc"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address",
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ThresholdChangeCancelled",
+      "prefix_topics": [
+        "threshc"
+      ],
+      "params": [],
+      "data_format": "map"
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "finalize_recovery",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "request_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "address",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Recomputes, from current guardian registrations, how many of this\\nrequest's historical approvers are still valid right now. This is\\nthe number `finalize_recovery` actually checks against the\\nthreshold \\xe2\\x80\\x94 never the raw `approvers.len()`.",
+      "name": "live_approval_count",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "request_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "u32",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Permissionless view of the current freeze epoch \\xe2\\x80\\x94 see\\n`request_guardian_freeze`'s doc comment for why this is a monotonic\\ncounter rather than a consumable flag. `smart_account::\\napply_guardian_freeze` compares this against the last epoch it\\napplied to decide whether there is a genuinely new, not-yet-applied\\nfreeze request.",
+      "name": "guardian_freeze_epoch",
+      "inputs": [],
+      "outputs": [
+        "u32"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Applies a pending guardian removal once its delay has elapsed.\\nPermissionless: the authorization decision (the admin proposing this\\nspecific removal) already happened, so *when* an already-authorized\\nremoval lands needs no further gate. Does not touch any open\\nrequest's stored `approvers` list \\xe2\\x80\\x94 that history is preserved as an\\naudit trail \\xe2\\x80\\x94 but the removed guardian's past approval stops\\ncounting toward `live_approval_count` / `finalize_recovery` from\\nthis point on, because both recompute against current guardian\\nregistration rather than trusting the historical approval.",
+      "name": "apply_guardian_removal",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Applies a pending guardian threshold change once its delay has\\nelapsed. Permissionless: the authorization decision (the admin\\nproposing this specific change) already happened, so *when* an\\nalready-authorized change lands needs no further gate. Doesn't call\\n`ensure_initialized` (there is nothing to permission-check), so it\\nexplicitly extends the instance TTL itself on this write, the same\\nway `smart_account::apply_adapter_change` does for its own\\ninstance-storage write.",
+      "name": "apply_threshold_change",
+      "inputs": [],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Cancels a pending guardian removal before it takes effect.\\nAdmin-gated, letting a legitimate admin walk back an erroneous or\\nno-longer-wanted proposal before its delay elapses.",
+      "name": "cancel_guardian_removal",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Cancels a pending guardian threshold change before it takes effect.\\nAdmin-gated, letting a legitimate admin walk back an erroneous or\\nno-longer-wanted proposal before its delay elapses.",
+      "name": "cancel_threshold_change",
+      "inputs": [],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Proposes removing a guardian. Does not take effect immediately \\xe2\\x80\\x94\\nsee `apply_guardian_removal`. The guardian remains fully active\\n(still counted by `is_guardian`, `live_approval_count`, and able to\\napprove requests or request a freeze) until the proposal is applied.\\nIndependent security review finding: immediate removal under\\nsingle-admin control meant a compromised admin could dismantle the\\nguardian set with no delay for anyone to notice.",
+      "name": "propose_remove_guardian",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Real gap this session found: `docs/TECHNICAL_ARCHITECTURE.md` \\xc2\\xa712.7\\ndocuments the canonical recovery workflow as starting with \"Guardian\\n... triggers freeze\" \\xe2\\x80\\x94 but `smart_account::freeze()` was owner-only,\\nwith no guardian-facing path at all. A single active guardian\\nrequesting freeze is enough to raise the flag (unlike recovery\\nitself, which needs quorum + timelock to *replace* authority,\\nstopping active bleeding while recovery is still pending doesn't\\nneed the same bar \\xe2\\x80\\x94 the worst case is an unnecessary pause, not a\\nloss of funds or authority). `smart_account::apply_guardian_freeze`\\npulls this epoch the same way `apply_recovery` pulls a finalized\\nrequest: permissionlessly, and this contract has no knowledge of, or\\ndependency on, the treasury that pulls it.\\n\\nStores a monotonically increasing epoch rather than a boolean flag.\\nSecurity review finding on an earlier revision of this function: a\\nplain `bool`, consumed (cleared) by a permissionless\\n`consume_guardian_freeze_request` call, let *any* third party",
+      "name": "request_guardian_freeze",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "guardian",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Proposes a new guardian threshold. Does not take effect immediately\\n\\xe2\\x80\\x94 see `apply_threshold_change`. Once applied, it takes\\neffect for any request not yet finalized: `finalize_recovery` always\\nreads the threshold fresh rather than the value in effect when the\\nrequest was opened or approved.",
+      "name": "propose_threshold_change",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_threshold",
+          "type_": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "RecoveryManagerError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_union_v0": {
+      "doc": "Represents different types of signers in the smart account system.",
+      "lib": "",
+      "name": "Signer",
+      "cases": [
+        {
+          "tuple_v0": {
+            "doc": "A delegated signer that uses built-in signature verification.",
+            "name": "Delegated",
+            "type_": [
+              "address"
+            ]
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "An external signer with custom verification logic.\\nContains the verifier contract address and the public key data.",
+            "name": "External",
+            "type_": [
+              "address",
+              "bytes"
+            ]
+          }
+        }
+      ]
+    }
+  }
+]

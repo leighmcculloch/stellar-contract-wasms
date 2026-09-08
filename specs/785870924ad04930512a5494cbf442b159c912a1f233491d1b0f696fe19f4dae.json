@@ -1,0 +1,159 @@
+[
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Initialized",
+      "prefix_topics": [
+        "init"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "smart_account",
+          "type_": "address",
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "TransferExecuted",
+      "prefix_topics": [
+        "xfer"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "token",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "to",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Binds this adapter instance to exactly one treasury `SmartAccount`.\\nAn adapter instance is not shared across unrelated treasuries: doing\\nso would let one treasury's approved transfer authorize funds moving\\nout of a different treasury with the same adapter configured.",
+      "name": "initialize",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "smart_account",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "TransferAdapterError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "TransferAdapterError",
+      "cases": [
+        {
+          "doc": "",
+          "name": "AlreadyInitialized",
+          "value": 6000
+        },
+        {
+          "doc": "",
+          "name": "NotInitialized",
+          "value": 6001
+        },
+        {
+          "doc": "",
+          "name": "InvalidAmount",
+          "value": 6002
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "contract_name",
+      "inputs": [],
+      "outputs": [
+        "symbol"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Executes a single SAC transfer of `amount` of `token` from the\\nconfigured treasury to `to`. Requires the treasury's own\\nauthorization for this exact call.",
+      "name": "execute_transfer",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "token",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "to",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "TransferAdapterError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Security review finding: this contract's instance TTL was only ever\\nextended as a side effect of `execute_transfer` succeeding, which\\nitself requires the treasury's own authorization -- meaning a\\ntreasury that goes fully dormant (no payments at all, entirely\\nplausible for e.g. a quarterly-disbursement treasury) had no way\\nfor *anyone* to keep this adapter's instance storage alive, since\\nthe one call that touches it can't be driven permissionlessly.\\nInstance storage archival is not a soft failure -- an archived\\ncontract cannot be invoked at all without a separate restore\\noperation. Every other contract in this workspace\\n(`smart_account`, `recovery_manager`, `policy_engine`,\\n`intent_registry`, `governance_account`) already has a\\npermissionless maintenance entrypoint for exactly this reason;\\nthis one and `split_adapter` were the two gaps.",
+      "name": "extend_instance_ttl",
+      "inputs": [],
+      "outputs": []
+    }
+  }
+]

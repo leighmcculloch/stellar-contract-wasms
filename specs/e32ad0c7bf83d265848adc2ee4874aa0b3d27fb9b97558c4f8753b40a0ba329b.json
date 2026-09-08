@@ -1,0 +1,187 @@
+[
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Initialized",
+      "prefix_topics": [
+        "init"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "smart_account",
+          "type_": "address",
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "SplitExecuted",
+      "prefix_topics": [
+        "split"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "token",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "recipient_count",
+          "type_": "u32",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "total",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "initialize",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "smart_account",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "SplitAdapterError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "SplitAdapterError",
+      "cases": [
+        {
+          "doc": "",
+          "name": "AlreadyInitialized",
+          "value": 7000
+        },
+        {
+          "doc": "",
+          "name": "NotInitialized",
+          "value": 7001
+        },
+        {
+          "doc": "",
+          "name": "InvalidAmount",
+          "value": 7002
+        },
+        {
+          "doc": "",
+          "name": "EmptySplit",
+          "value": 7003
+        },
+        {
+          "doc": "",
+          "name": "TooManyRecipients",
+          "value": 7004
+        },
+        {
+          "doc": "",
+          "name": "RecipientAmountLengthMismatch",
+          "value": 7005
+        },
+        {
+          "doc": "",
+          "name": "TotalAmountOverflow",
+          "value": 7006
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "contract_name",
+      "inputs": [],
+      "outputs": [
+        "symbol"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Splits `token` from the treasury across `recipients[i]` receiving\\n`amounts[i]`, for every index. Positionally aligned by index;\\n`recipients` and `amounts` must have the same length, each amount\\nmust be positive, and the recipient count is bounded so a single\\ncall cannot be used to exhaust the transaction's resource budget or\\nsilently balloon the preauthorized action's blast radius.",
+      "name": "execute_split",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "token",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "recipients",
+          "type_": {
+            "vec": {
+              "element_type": "address"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "amounts",
+          "type_": {
+            "vec": {
+              "element_type": "i128"
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "SplitAdapterError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Security review finding: same gap as `transfer_adapter`'s identical\\nentrypoint -- this contract's instance TTL was only ever extended\\nas a side effect of `execute_split` succeeding, which itself\\nrequires the treasury's own authorization. A fully dormant\\ntreasury (no split payments at all for ~30 days -- plausible, e.g.\\na treasury that only ever does single-recipient transfers) had no\\npermissionless way to keep this adapter's instance storage alive.",
+      "name": "extend_instance_ttl",
+      "inputs": [],
+      "outputs": []
+    }
+  }
+]

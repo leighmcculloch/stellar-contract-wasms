@@ -1,0 +1,513 @@
+[
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Initialized",
+      "prefix_topics": [
+        "init"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address",
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ChildExecuted",
+      "prefix_topics": [
+        "exec"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "intent_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "child_sequence",
+          "type_": "u32",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "IntentCreated",
+      "prefix_topics": [
+        "intent"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "intent_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ScheduledIntent",
+      "fields": [
+        {
+          "doc": "The `transfer_adapter` address configured on `smart_account` at the\\nmoment this intent was approved, pinned here for the same reason\\n`policy_version` is: reconfiguring the adapter after approval (via\\n`smart_account::propose_adapter_change`/`apply_adapter_change`) must not silently redirect an\\nalready-approved scheduled payment through a different execution\\npath. Execution reads this field back rather than resolving the\\ntreasury's *current* adapter configuration.",
+          "name": "adapter",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "asset",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "cancelled",
+          "type_": "bool"
+        },
+        {
+          "doc": "",
+          "name": "destination",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "end_ledger",
+          "type_": "u32"
+        },
+        {
+          "doc": "Cumulative count of successfully marked child executions.",
+          "name": "execution_count",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "intent_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "Security review finding: `start_ledger`/`end_ledger`/`max_executions`\\nalone bound a *total* allowance and its outer window, but nothing\\nstopped the executor from consuming every remaining execution the\\nmoment the window opened \\xe2\\x80\\x94 fine for bounded batch execution (the\\ncase this contract was originally built around), but wrong for a\\ngenuinely recurring schedule (e.g. \"$1,000/month for a year\"),\\nwhere the whole point is spreading executions out over time, not\\njust capping their count. `0` preserves the original behavior\\nexactly (any unused `child_sequence` executable any time in the\\nwindow) \\xe2\\x80\\x94 this is opt-in, not a behavior change for existing\\ncallers. When set, `mark_child_executed` additionally requires\\n`child_sequence`'s own due ledger\\n(`start_ledger + interval_ledgers * (child_sequence - 1)`) to have\\narrived.",
+          "name": "interval_ledgers",
+          "type_": "u32"
+        },
+        {
+          "doc": "Total number of child executions this intent may ever authorize.\\nBounds recurring automation instead of allowing unlimited replay\\nwithin an otherwise-valid execution window.",
+          "name": "max_executions",
+          "type_": "u32"
+        },
+        {
+          "doc": "PolicyEngine version in effect when this intent was approved, pinned\\nat creation so a later policy version bump cannot silently change\\nwhich rules a previously-approved scheduled payment executes under\\n(see `docs/TECHNICAL_ARCHITECTURE.md` \\xc2\\xa713.2: \"Policy version changes\\ncannot silently mutate previously created automation semantics\").",
+          "name": "policy_version",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "start_ledger",
+          "type_": "u32"
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ExecutorUpdated",
+      "prefix_topics": [
+        "execset"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "executor",
+          "type_": "address",
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "IntentCancelled",
+      "prefix_topics": [
+        "cancel"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "intent_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_intent",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "intent_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "udt": {
+                "name": "ScheduledIntent"
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "IntentRegistryError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "initialize",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "IntentRegistryError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "IntentRegistryError",
+      "cases": [
+        {
+          "doc": "",
+          "name": "AlreadyInitialized",
+          "value": 3000
+        },
+        {
+          "doc": "",
+          "name": "NotInitialized",
+          "value": 3001
+        },
+        {
+          "doc": "",
+          "name": "IntentAlreadyExists",
+          "value": 3002
+        },
+        {
+          "doc": "",
+          "name": "IntentNotFound",
+          "value": 3003
+        },
+        {
+          "doc": "",
+          "name": "InvalidAmount",
+          "value": 3004
+        },
+        {
+          "doc": "",
+          "name": "InvalidWindow",
+          "value": 3005
+        },
+        {
+          "doc": "",
+          "name": "IntentCancelled",
+          "value": 3006
+        },
+        {
+          "doc": "",
+          "name": "ExecutionTooEarly",
+          "value": 3007
+        },
+        {
+          "doc": "",
+          "name": "ExecutionExpired",
+          "value": 3008
+        },
+        {
+          "doc": "",
+          "name": "ChildAlreadyExecuted",
+          "value": 3009
+        },
+        {
+          "doc": "",
+          "name": "UnauthorizedExecutor",
+          "value": 3010
+        },
+        {
+          "doc": "",
+          "name": "InvalidMaxExecutions",
+          "value": 3011
+        },
+        {
+          "doc": "",
+          "name": "ExecutionLimitReached",
+          "value": 3012
+        },
+        {
+          "doc": "",
+          "name": "InvalidChildSequence",
+          "value": 3013
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "set_executor",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "executor",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "IntentRegistryError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "cancel_intent",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "intent_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "IntentRegistryError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "contract_name",
+      "inputs": [],
+      "outputs": [
+        "symbol"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "create_intent",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "intent",
+          "type_": {
+            "udt": {
+              "name": "ScheduledIntent"
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "IntentRegistryError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Permissionless TTL maintenance for named, already-existing intents\\nand their child execution records \\xe2\\x80\\x94 extending TTL creates no\\nauthority (\\xc2\\xa716.1), so no admin gate is needed. `Initialized`/`Admin`/\\n`Executor` live in instance storage (one shared TTL, refreshed\\nautomatically by `ensure_initialized` on every call that reaches\\nit), so no separate bump is needed for them here.",
+      "name": "extend_intent_ttl",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "intent_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "child_sequences",
+          "type_": {
+            "vec": {
+              "element_type": "u32"
+            }
+          }
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "is_child_executed",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "intent_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "child_sequence",
+          "type_": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "bool",
+            "error_type": {
+              "udt": {
+                "name": "IntentRegistryError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "mark_child_executed",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "intent_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "child_sequence",
+          "type_": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "IntentRegistryError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+]
