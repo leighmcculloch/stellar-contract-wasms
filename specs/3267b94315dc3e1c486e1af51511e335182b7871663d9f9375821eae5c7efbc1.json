@@ -1,0 +1,871 @@
+[
+  {
+    "function_v0": {
+      "doc": "Returns the whole remaining escrow to the maker, on the maker's own\\nauthorization, at any time.",
+      "name": "cancel",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "id",
+          "type_": "u64"
+        }
+      ],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Fills `take_amount` of the sell asset, returning what the taker paid.\\n\\nThe taker names the delivery, not the payment, because the delivery is the\\nescrowed quantity: it makes `remaining_sell` the single decrementing\\ncounter and drains escrow to exactly zero on a full fill, leaving no dust\\nsweep and no unclaimable sliver.\\n\\nState is written before any external call. The buy leg's delta is checked\\nbecause the maker cannot inspect it and cannot walk away once filled; the\\ncommission leg's is not, because a lying token costs only the recipient,\\nwhom the maker chose. A maker payout that nets to zero is skipped rather\\nthan refused \\xe2\\x80\\x94 panicking there would strand the very dust tail the\\n`min_fill` waiver exists to keep takeable.",
+      "name": "settle",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "taker",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "id",
+          "type_": "u64"
+        },
+        {
+          "doc": "",
+          "name": "take_amount",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Returns an expired Swap's remaining escrow to the maker. Permissionless:\\nthe funds can only ever reach the maker, so triggering it grants a third\\nparty no power they did not already have, and it means an abandoned Swap\\ndoes not depend on its maker still being around.",
+      "name": "reclaim",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "id",
+          "type_": "u64"
+        }
+      ],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_swap",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "id",
+          "type_": "u64"
+        }
+      ],
+      "outputs": [
+        {
+          "udt": {
+            "name": "SwapView"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Sets the administrator, whose only power is the creation kill-switch. It\\ncan never touch escrow, block a settle, cancel a Swap, or upgrade the\\ncontract \\xe2\\x80\\x94 an open Swap stays settleable no matter what the admin does.\\n\\nRequiring the admin's own authorization stops an address being named\\nadministrator without its consent.",
+      "name": "initialize",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Escrows `terms.sell_amount` and opens a Swap, returning its id.\\n\\nValidation runs before any transfer, and the escrow pull is bracketed by a\\nbalance read that panics on a short delta. A fee-skimming sell token is\\ntherefore not escrowable at all, which is the right outcome twice over:\\nthe taker's guarantee stays exact, and so does the pro-rata denominator\\nevery later fill divides by.\\n\\n`fee_amount` is Bitbond's service fee, charged once here and unrelated to\\n`terms.commission`, which is the maker's own brokerage on each settle. The\\nfee moves before the escrow so a failed fee cannot leave funds locked.",
+      "name": "create_swap",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "maker",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "terms",
+          "type_": {
+            "udt": {
+              "name": "SwapTerms"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "fee_token",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "fee_recipient",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "fee_amount",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        "u64"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_maker_index",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "maker",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "page",
+          "type_": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "udt": {
+            "name": "IndexPage"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_taker_index",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "taker",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "page",
+          "type_": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "udt": {
+            "name": "IndexPage"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_swaps_by_maker",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "maker",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "page",
+          "type_": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "udt": {
+            "name": "SwapPage"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_swaps_by_taker",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "taker",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "page",
+          "type_": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "udt": {
+            "name": "SwapPage"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "is_creation_paused",
+      "inputs": [],
+      "outputs": [
+        "bool"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "The kill-switch. Stops new Swaps only \\xe2\\x80\\x94 every existing one stays\\nsettleable, cancelable and reclaimable, so pausing can never trap escrow.",
+      "name": "set_creation_paused",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "paused",
+          "type_": "bool"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "Numbered from 100 so the range never overlaps the Stellar Asset Contract's\\nown codes (1-10). `settle` and the escrow paths cross-invoke the token, so a\\ncaller reading `Error(Contract, #N)` off a failed Swap call cannot otherwise\\ntell whose error it is \\xe2\\x80\\x94 and rendering a token's `BalanceError` as a Swap\\npricing complaint sends the user to fix a field that was never wrong.\\n\\nThe numbering is a compatibility surface: the app maps these to messages and\\nto HTTP statuses, so a deployed instance that numbers them differently cannot\\nbe served alongside a current one. Append new codes, never renumber.",
+      "lib": "",
+      "name": "ContractError",
+      "cases": [
+        {
+          "doc": "",
+          "name": "AlreadyInitialized",
+          "value": 100
+        },
+        {
+          "doc": "",
+          "name": "NotInitialized",
+          "value": 101
+        },
+        {
+          "doc": "",
+          "name": "CreationPaused",
+          "value": 102
+        },
+        {
+          "doc": "",
+          "name": "InvalidAmount",
+          "value": 103
+        },
+        {
+          "doc": "",
+          "name": "InvalidExpiry",
+          "value": 104
+        },
+        {
+          "doc": "",
+          "name": "ExpiryTooFar",
+          "value": 105
+        },
+        {
+          "doc": "",
+          "name": "SameToken",
+          "value": 106
+        },
+        {
+          "doc": "",
+          "name": "TakerIsMaker",
+          "value": 107
+        },
+        {
+          "doc": "",
+          "name": "MemoTooLong",
+          "value": 108
+        },
+        {
+          "doc": "",
+          "name": "InvalidCommissionRate",
+          "value": 109
+        },
+        {
+          "doc": "",
+          "name": "InvalidCommissionRecipient",
+          "value": 110
+        },
+        {
+          "doc": "",
+          "name": "InvalidFeeAmount",
+          "value": 111
+        },
+        {
+          "doc": "",
+          "name": "InvalidRecipient",
+          "value": 112
+        },
+        {
+          "doc": "",
+          "name": "SwapNotFound",
+          "value": 113
+        },
+        {
+          "doc": "",
+          "name": "NotTaker",
+          "value": 115
+        },
+        {
+          "doc": "",
+          "name": "SwapNotOpen",
+          "value": 116
+        },
+        {
+          "doc": "",
+          "name": "SwapExpired",
+          "value": 117
+        },
+        {
+          "doc": "",
+          "name": "NotYetExpired",
+          "value": 118
+        },
+        {
+          "doc": "",
+          "name": "InvalidFillAmount",
+          "value": 119
+        },
+        {
+          "doc": "",
+          "name": "FillBelowMin",
+          "value": 120
+        },
+        {
+          "doc": "",
+          "name": "FillAboveMax",
+          "value": 121
+        },
+        {
+          "doc": "",
+          "name": "EscrowShortfall",
+          "value": 122
+        },
+        {
+          "doc": "",
+          "name": "BuyLegShortfall",
+          "value": 123
+        },
+        {
+          "doc": "",
+          "name": "Overflow",
+          "value": 124
+        },
+        {
+          "doc": "",
+          "name": "PageOutOfRange",
+          "value": 125
+        },
+        {
+          "doc": "",
+          "name": "InvalidFillBounds",
+          "value": 126
+        },
+        {
+          "doc": "",
+          "name": "AmountsTooLarge",
+          "value": 127
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Swap",
+      "fields": [
+        {
+          "doc": "",
+          "name": "buy_amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "buy_token",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "commission",
+          "type_": {
+            "udt": {
+              "name": "SwapCommission"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "expiry",
+          "type_": "u64"
+        },
+        {
+          "doc": "",
+          "name": "maker",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "max_fill",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "memo",
+          "type_": "string"
+        },
+        {
+          "doc": "",
+          "name": "min_fill",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "remaining_sell",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "sell_amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "sell_token",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "state",
+          "type_": {
+            "udt": {
+              "name": "SwapState"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "taker",
+          "type_": {
+            "udt": {
+              "name": "SwapTaker"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_union_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "DataKey",
+      "cases": [
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Admin"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "CreationPaused"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "NextSwapId"
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "",
+            "name": "Swap",
+            "type_": [
+              "u64"
+            ]
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "",
+            "name": "Index",
+            "type_": [
+              {
+                "udt": {
+                  "name": "IndexKind"
+                }
+              },
+              "address"
+            ]
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "",
+            "name": "IndexPage",
+            "type_": [
+              {
+                "udt": {
+                  "name": "IndexKind"
+                }
+              },
+              "address",
+              "u32"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "SwapPage",
+      "fields": [
+        {
+          "doc": "",
+          "name": "page_count",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "swaps",
+          "type_": {
+            "vec": {
+              "element_type": {
+                "udt": {
+                  "name": "SwapView"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "SwapView",
+      "fields": [
+        {
+          "doc": "",
+          "name": "id",
+          "type_": "u64"
+        },
+        {
+          "doc": "",
+          "name": "status",
+          "type_": {
+            "udt": {
+              "name": "SwapStatus"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "swap",
+          "type_": {
+            "udt": {
+              "name": "Swap"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_union_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "IndexKind",
+      "cases": [
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Maker"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Taker"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "IndexPage",
+      "fields": [
+        {
+          "doc": "",
+          "name": "ids",
+          "type_": {
+            "vec": {
+              "element_type": "u64"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "page_count",
+          "type_": "u32"
+        }
+      ]
+    }
+  },
+  {
+    "udt_union_v0": {
+      "doc": "What the Swap has been *made* to be. Expiry is not here: it is a function of\\nthe clock, so storing it would mean a write nobody is obliged to make. See\\n`status_of`.",
+      "lib": "",
+      "name": "SwapState",
+      "cases": [
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Open"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Filled"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Canceled"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Reclaimed"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_union_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "SwapTaker",
+      "cases": [
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Anyone"
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "",
+            "name": "Named",
+            "type_": [
+              "address"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "SwapTerms",
+      "fields": [
+        {
+          "doc": "",
+          "name": "buy_amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "buy_token",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "commission",
+          "type_": {
+            "udt": {
+              "name": "SwapCommission"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "expiry",
+          "type_": "u64"
+        },
+        {
+          "doc": "",
+          "name": "max_fill",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "memo",
+          "type_": "string"
+        },
+        {
+          "doc": "",
+          "name": "min_fill",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "sell_amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "sell_token",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "taker",
+          "type_": {
+            "udt": {
+              "name": "SwapTaker"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Commission",
+      "fields": [
+        {
+          "doc": "",
+          "name": "maker_bps",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "recipient",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "taker_bps",
+          "type_": "u32"
+        }
+      ]
+    }
+  },
+  {
+    "udt_union_v0": {
+      "doc": "What a reader sees, `SwapState` resolved against the current ledger time.",
+      "lib": "",
+      "name": "SwapStatus",
+      "cases": [
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Open"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Expired"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Filled"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Canceled"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Reclaimed"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_union_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "SwapCommission",
+      "cases": [
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Unset"
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "",
+            "name": "Terms",
+            "type_": [
+              {
+                "udt": {
+                  "name": "Commission"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+]
