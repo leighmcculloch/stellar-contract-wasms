@@ -1,0 +1,114 @@
+[
+  {
+    "event_v0": {
+      "doc": "Emitted when a deposit is forwarded.\\n\\nNative XLM deposits carry the XLM Stellar Asset Contract address in\\n`token`; consumers identify native deposits by comparing against the\\nnetwork's XLM SAC address.",
+      "lib": "",
+      "name": "Deposited",
+      "prefix_topics": [
+        "deposited"
+      ],
+      "params": [
+        {
+          "doc": "The id correlating with an off-chain Layerswap order.",
+          "name": "id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "topic_list"
+        },
+        {
+          "doc": "The token deposited.",
+          "name": "token",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "The address that received the funds.",
+          "name": "receiver",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "The amount requested to transfer (fee-on-transfer tokens may\\ndeliver less).",
+          "name": "amount",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Forwards `amount` of `token` from `from` directly to `receiver` and\\nemits a `Deposited` event. Native XLM is deposited by passing the XLM\\nStellar Asset Contract as `token`.\\n\\n`from` must authorize this call and the nested `token.transfer`\\n(one signed auth tree). The token itself rejects negative amounts\\nand insufficient balances; no other validation is performed \\xe2\\x80\\x94\\nreceiver legitimacy is enforced off-chain by the Layerswap backend.",
+      "name": "deposit",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "from",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "token",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "receiver",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Forwards `from`'s entire allowance granted to this contract to\\n`receiver` and emits a `Deposited` event. Companion to `deposit` for\\nflows where the amount was fixed in an earlier `token.approve(from,\\ndepository, amount, live_until_ledger)` transaction.\\n\\n`from` must authorize this call \\xe2\\x80\\x94 the allowance alone must not let a\\nthird party spend it with their own `id`/`receiver`. Do NOT use with\\n\"infinite\" approvals: transferring the full allowance fails on\\ninsufficient balance. Use `deposit` instead.",
+      "name": "deposit_allowance",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "from",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "token",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "receiver",
+          "type_": "address"
+        }
+      ],
+      "outputs": []
+    }
+  }
+]
