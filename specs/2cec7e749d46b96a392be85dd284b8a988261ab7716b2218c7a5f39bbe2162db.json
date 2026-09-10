@@ -1,0 +1,2828 @@
+[
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "pause",
+      "inputs": [],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "stake",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "staker",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "beneficiary",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "unpause",
+      "inputs": [],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "withdraw",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "staker",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "beneficiary",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_claim",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "option": {
+            "value_type": {
+              "udt": {
+                "name": "Claim"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_stake",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "option": {
+            "value_type": {
+              "udt": {
+                "name": "StakeRecord"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_vault",
+      "inputs": [],
+      "outputs": [
+        {
+          "option": {
+            "value_type": "address"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "is_paused",
+      "inputs": [],
+      "outputs": [
+        "bool"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Sets the DeFindex vault address. Refuses while shares are held.\\n\\nDeploy SAFU's own vault via the DeFindex factory with\\n`upgradable = false` and `vault_fee = 0` \\xe2\\x80\\x94 both are constructor\\narguments on the real vault (verified on-chain 2026-08-14). With\\n`upgradable = false` the vault's `upgrade(new_wasm_hash)` path is\\npermanently dead, which removes the Manager-can-upgrade custody risk\\nstructurally rather than mitigating it procedurally.",
+      "name": "set_vault",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "vault_address",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "set_oracle",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_oracle",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "V8 `isEligible`: has an active, non-withdrawn, non-suspended\\nstake. Does NOT check the time gate \\xe2\\x80\\x94 see is_claim_eligible.",
+      "name": "is_eligible",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        "bool"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "cancel_claim",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "claim_stream",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "beneficiary",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "i128",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "set_pool_cap",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_cap",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "set_treasury",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "treasury",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "CHANGED T2/D1: `deadline` + `signature` are now required arguments.\\nWhen `caller` is the oracle the contract verifies an Ed25519\\nsignature over the verdict on-chain; when `caller` is the admin\\n(manual fallback) both are ignored, exactly as in V8. See\\n`claim::submit_claim` for the full auth-model rationale.",
+      "name": "submit_claim",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "caller",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "tx_hash",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "entitlement",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "tier",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "hack_timestamp",
+          "type_": "u64"
+        },
+        {
+          "doc": "",
+          "name": "deadline",
+          "type_": "u64"
+        },
+        {
+          "doc": "",
+          "name": "signature",
+          "type_": {
+            "bytes_n": {
+              "n": 64
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": {
+              "bytes_n": {
+                "n": 32
+              }
+            },
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Deploy-time initialization.\\n\\nCHANGED 2026-08-17 (7a audit, Finding 3): was a separate `initialize`\\nentrypoint. Renamed to `__constructor`, the SDK-recognised constructor\\nhook, which runs **as part of the deploy invocation itself**.\\n\\nWhy this mattered: `initialize` authorized the `admin` **argument**\\npassed to it, and the only thing stopping a second call was the\\n`AlreadyInitialized` guard. That guard protects against\\nre-initialization but not against being *first* \\xe2\\x80\\x94 between the deploy\\ntransaction and the legitimate init transaction, anyone observing the\\nchain could call `initialize` with themselves as admin and satisfy\\n`require_auth` trivially. The T1 testnet deployment used two separate\\ntransactions (README), so the window was real rather than theoretical.\\nStellar's own guidance is explicit: prefer `__constructor` because it\\n\"removes the front-running window between deploy and init\", and note\\nthat a contract deployed without one can never gain it afterwards \\xe2\\x80\\x94\\nwhich is why this had to change before D4's d",
+      "name": "__constructor",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "oracle",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "oracle_pubkey",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "co_signer",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "xlm_token",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "pool_cap",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "NEW 2026-07-22 (Rule A) \\xe2\\x80\\x94 staker-authorized. Burns the wallet's\\nentire lifetime points balance, forfeits the stake, starts\\ncooldown/vesting. Must be called within `APPROVE_WINDOW_LEDGERS` of\\nthe claim entering `AwaitingApproval`.",
+      "name": "approve_claim",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Redeem a tranche and send only the excess above proportional\\nprincipal to treasury. Returns the yield amount (0 on a loss).",
+      "name": "extract_yield",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "shares",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "min_xlm_out",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "i128",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "set_co_signer",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_co_signer",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "suspend_stake",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "emergency_exit",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "staker",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_deploy_bps",
+      "inputs": [],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Max fraction of `total_staked` deployable, in bps. Starts at 0, so\\nthe yield layer is inert until admin opts in. Hard-capped at\\n`MAX_DEPLOY_BPS` (80%); 5000 (50%) is the T2 recommendation.",
+      "name": "set_deploy_bps",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "bps",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "transfer_admin",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_admin",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Send already-liquid excess above staker principal to treasury.",
+      "name": "withdraw_yield",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Supply liquid XLM into the vault. Returns shares gained.\\n`min_shares_out` is the caller's floor against an adverse share\\nprice \\xe2\\x80\\x94 quote it off-chain via the vault's\\n`get_asset_amounts_per_shares` first.",
+      "name": "deploy_to_vault",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "min_shares_out",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "i128",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "T2/D1 \\xe2\\x80\\x94 admin-only. Cancels a signed-but-not-yet-submitted oracle\\napproval. Takes the full approval parameters rather than a\\nprecomputed hash (V8's shape); see `claim::revoke_approval` for why.",
+      "name": "revoke_approval",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "caller",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "tx_hash",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "entitlement",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "tier",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "hack_timestamp",
+          "type_": "u64"
+        },
+        {
+          "doc": "",
+          "name": "deadline",
+          "type_": "u64"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "set_beneficiary",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "staker",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "new_beneficiary",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "`claim_id` optional \\xe2\\x80\\x94 pass the wallet's in-flight claim (if any) so\\nits Rule A/B deadline clock resets on unsuspend (eng review\\nblocker #1). `None` if the wallet has no claim needing a reset.",
+      "name": "unsuspend_stake",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "option": {
+              "value_type": {
+                "bytes_n": {
+                  "n": 32
+                }
+              }
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "approve_override",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "caller",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "tx_hash",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "entitlement",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "tier",
+          "type_": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "T3 (2026-08-24) \\xe2\\x80\\x94 permissionless sibling of `provide_liquidity`.\\nPulls back only enough to cover `total_allocated` if liquid balance\\nis short of it. No caller input. Works while paused, same reasoning\\nas `provide_liquidity`. Returns 0 if nothing's short.",
+      "name": "ensure_liquidity",
+      "inputs": [],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "i128",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_total_staked",
+      "inputs": [],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_total_stakers",
+      "inputs": [],
+      "outputs": [
+        "u32"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "V8 `yieldBalance()`: (liquid + deployed) \\xe2\\x88\\x92 total_staked, floored at 0.",
+      "name": "get_yield_balance",
+      "inputs": [],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "V8 `isClaimEligible`: is_eligible AND the 90-day time gate has\\npassed.",
+      "name": "is_claim_eligible",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        "bool"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Redeem shares so the XLM sits liquid in the contract, ready to fund\\npayouts and withdrawals. Nothing leaves the pool. Works while\\npaused, deliberately \\xe2\\x80\\x94 `emergency_exit` depends on it.",
+      "name": "provide_liquidity",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "shares",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "min_xlm_out",
+          "type_": "i128"
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "i128",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "T2/D1 \\xe2\\x80\\x94 rotates the oracle's Ed25519 attestation key. Distinct from\\n`set_oracle`, which rotates the policy Address; see admin.rs for why\\nthe two are separate identities and what rotation costs.",
+      "name": "set_oracle_pubkey",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_pubkey",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "NEW 2026-07-22 (Rule B sweep) \\xe2\\x80\\x94 permissionless. Releases whatever's\\nleft uncollected if the staker goes `COLLECTION_INACTIVITY_LEDGERS`\\nwith zero `claim_stream` activity.",
+      "name": "expire_stale_claim",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Real liquid XLM held by the contract \\xe2\\x80\\x94 distinct from\\n`get_total_staked`, which counts XLM sitting in the vault too.",
+      "name": "get_liquid_balance",
+      "inputs": [],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "V8 `pointsOf`: live-computed if still staked and not withdrawn,\\nelse the banked balance. NOT a raw storage read.",
+      "name": "get_points_balance",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "T3 (2026-08-24) \\xe2\\x80\\x94 permissionless. Sweeps a queued claim whose claim\\nwindow ran out before capacity ever freed.",
+      "name": "expire_queued_claim",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_total_allocated",
+      "inputs": [],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "T2/D1 \\xe2\\x80\\x94 rotates BOTH oracle identities in one call. Prefer this over\\n`set_oracle` + `set_oracle_pubkey` in sequence whenever the whole\\noracle is being replaced; see admin.rs for the drift window the\\ntwo-step leaves open and why it is a port-introduced hazard rather\\nthan a V8 parity cost.",
+      "name": "set_oracle_identity",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_oracle",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "new_pubkey",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "unlock_pending_claim",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "T3 (2026-08-24) \\xe2\\x80\\x94 permissionless sibling of `deploy_to_vault`. Puts\\nidle liquidity (above what's reserved for live claims) to work\\nautomatically, up to the existing `deploy_bps` ceiling. No caller\\ninput \\xe2\\x80\\x94 the contract computes the amount and its own slippage\\nfloor. Requires at least one prior manual `deploy_to_vault` call\\n(needs a reference rate); returns 0 if nothing's idle or no room\\nremains under the ceiling.",
+      "name": "auto_deploy_liquidity",
+      "inputs": [],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "i128",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "XLM in the vault at ORIGINAL deposit value, never marked to market.",
+      "name": "get_total_deployed_xlm",
+      "inputs": [],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "cancel_pending_override",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "caller",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "tx_hash",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "NEW 2026-07-22 (Rule A sweep) \\xe2\\x80\\x94 permissionless, mirrors\\n`unlock_pending_claim`. Releases the reservation back to the pool\\nif the staker never approved within the window.",
+      "name": "expire_pending_approval",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Current deployed fraction in bps. May read above `get_deploy_bps`\\nafter a large withdrawal \\xe2\\x80\\x94 that is drift, not a breach; see vault.rs.",
+      "name": "get_deployment_ratio_bps",
+      "inputs": [],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "T3 (2026-08-24) \\xe2\\x80\\x94 permissionless. Re-checks a queued claim's original\\nblocker (`DailyStressCapExceeded`/`Insolvent`) against current state;\\nadmits it for real if that now passes, otherwise returns\\n`QueueReleaseNotYetEligible` and it stays `Reserved`.",
+      "name": "try_release_queued_claim",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "result": {
+            "ok_type": "void",
+            "error_type": {
+              "udt": {
+                "name": "PoolError"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_total_deployed_shares",
+      "inputs": [],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "get_total_extracted_yield",
+      "inputs": [],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "T3 (2026-08-24): `submit_claim` could not admit the claim right now\\n(`DailyStressCapExceeded`, `Insolvent`, or `OracleDailyClaimLimitReached`)\\nso it was queued rather than rejected \\xe2\\x80\\x94 `ClaimStatus::Reserved`, publicly\\nreadable via the existing `get_claim`, same as any other claim state.",
+      "lib": "",
+      "name": "ClaimQueued",
+      "prefix_topics": [
+        "claim_queued"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "entitlement",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "NEW 2026-07-22 \\xe2\\x80\\x94 emitted by either `expire_pending_approval` (Rule A)\\nor `expire_stale_claim` (Rule B). `released` is whatever was returned\\nto the pool.",
+      "lib": "",
+      "name": "ClaimExpired",
+      "prefix_topics": [
+        "claim_expired"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "released",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "NEW 2026-07-22 (Rule A) \\xe2\\x80\\x94 emitted by `approve_claim`, the staker's own\\naction that triggers points burn + forfeiture + cooldown/vesting start.",
+      "lib": "",
+      "name": "ClaimApproved",
+      "prefix_topics": [
+        "claim_approved"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "points_burned",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ClaimStreamed",
+      "prefix_topics": [
+        "claim_streamed"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ClaimUnlocked",
+      "prefix_topics": [
+        "claim_unlocked"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ClaimCancelled",
+      "prefix_topics": [
+        "claim_cancelled"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ClaimSubmitted",
+      "prefix_topics": [
+        "claim_submitted"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "entitlement",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "NEW T2/D1 \\xe2\\x80\\x94 mirrors V8's `ApprovalRevoked(approvalHash)` event (`:839`),\\nwith `wallet` added as a topic so an operator can filter revocations by\\nthe wallet they affect (V8's hash-only event is not filterable that way).",
+      "lib": "",
+      "name": "ApprovalRevoked",
+      "prefix_topics": [
+        "approval_revoked"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "approval_hash",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "T3 fix (2026-08-24): `points_burned` added, mirroring `ClaimApproved`.\\nThe burn itself was always correct (`activate_claim` always ran) \\xe2\\x80\\x94 only\\nthe event was silent about it.",
+      "lib": "",
+      "name": "OverrideExecuted",
+      "prefix_topics": [
+        "override_executed"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "points_burned",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "T3: a queued claim's window ran out before it ever cleared.",
+      "lib": "",
+      "name": "ClaimQueueExpired",
+      "prefix_topics": [
+        "claim_queue_expired"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "OverrideCancelled",
+      "prefix_topics": [
+        "override_cancelled"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "topic_list"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "T3: a queued claim's blocker cleared and it was admitted for real.",
+      "lib": "",
+      "name": "ClaimQueueReleased",
+      "prefix_topics": [
+        "claim_queue_released"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "claim_id",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "PoolError",
+      "cases": [
+        {
+          "doc": "",
+          "name": "NoStake",
+          "value": 1
+        },
+        {
+          "doc": "",
+          "name": "AlreadyWithdrawn",
+          "value": 2
+        },
+        {
+          "doc": "",
+          "name": "PoolCapNotPositive",
+          "value": 3
+        },
+        {
+          "doc": "",
+          "name": "AlreadyInitialized",
+          "value": 10
+        },
+        {
+          "doc": "",
+          "name": "OracleEqualsCoSigner",
+          "value": 11
+        },
+        {
+          "doc": "",
+          "name": "CoSignerEqualsAdmin",
+          "value": 12
+        },
+        {
+          "doc": "",
+          "name": "NewAdminEqualsCoSigner",
+          "value": 13
+        },
+        {
+          "doc": "",
+          "name": "PoolCapBelowTotalStaked",
+          "value": 14
+        },
+        {
+          "doc": "",
+          "name": "CoSignerEqualsOracle",
+          "value": 15
+        },
+        {
+          "doc": "",
+          "name": "StakeNotPositive",
+          "value": 20
+        },
+        {
+          "doc": "",
+          "name": "StakeOutOfRange",
+          "value": 21
+        },
+        {
+          "doc": "",
+          "name": "AlreadyStaked",
+          "value": 22
+        },
+        {
+          "doc": "",
+          "name": "PoolCapExceeded",
+          "value": 23
+        },
+        {
+          "doc": "",
+          "name": "BeneficiaryIsStaker",
+          "value": 24
+        },
+        {
+          "doc": "",
+          "name": "BeneficiaryIsOracle",
+          "value": 25
+        },
+        {
+          "doc": "",
+          "name": "BeneficiaryIsAdmin",
+          "value": 26
+        },
+        {
+          "doc": "",
+          "name": "BeneficiaryIsCoSigner",
+          "value": 27
+        },
+        {
+          "doc": "",
+          "name": "StakeForfeited",
+          "value": 28
+        },
+        {
+          "doc": "",
+          "name": "ClaimActive",
+          "value": 29
+        },
+        {
+          "doc": "",
+          "name": "PenaltyLockActive",
+          "value": 30
+        },
+        {
+          "doc": "",
+          "name": "WrongBeneficiary",
+          "value": 31
+        },
+        {
+          "doc": "",
+          "name": "NoActiveStake",
+          "value": 32
+        },
+        {
+          "doc": "",
+          "name": "InvalidTier",
+          "value": 40
+        },
+        {
+          "doc": "",
+          "name": "CallerNotOracleOrAdmin",
+          "value": 41
+        },
+        {
+          "doc": "",
+          "name": "EntitlementNotPositive",
+          "value": 42
+        },
+        {
+          "doc": "",
+          "name": "StakeSuspended",
+          "value": 43
+        },
+        {
+          "doc": "",
+          "name": "ClaimAlreadyActiveForStake",
+          "value": 44
+        },
+        {
+          "doc": "",
+          "name": "EntitlementExceedsTierCap",
+          "value": 45
+        },
+        {
+          "doc": "",
+          "name": "HackTimestampInFuture",
+          "value": 46
+        },
+        {
+          "doc": "",
+          "name": "HackPredatesStake",
+          "value": 47
+        },
+        {
+          "doc": "",
+          "name": "ClaimWindowExpired",
+          "value": 48
+        },
+        {
+          "doc": "",
+          "name": "Insolvent",
+          "value": 49
+        },
+        {
+          "doc": "",
+          "name": "DailyStressCapExceeded",
+          "value": 50
+        },
+        {
+          "doc": "",
+          "name": "OracleDailyClaimLimitReached",
+          "value": 51
+        },
+        {
+          "doc": "",
+          "name": "ClaimAlreadyExists",
+          "value": 52
+        },
+        {
+          "doc": "",
+          "name": "NoSuchClaim",
+          "value": 53
+        },
+        {
+          "doc": "",
+          "name": "ClaimNotPending",
+          "value": 54
+        },
+        {
+          "doc": "",
+          "name": "TimeGateNotMet",
+          "value": 55
+        },
+        {
+          "doc": "",
+          "name": "ClaimNotAwaitingApproval",
+          "value": 56
+        },
+        {
+          "doc": "",
+          "name": "ApprovalWindowExpired",
+          "value": 57
+        },
+        {
+          "doc": "",
+          "name": "ApprovalWindowNotExpired",
+          "value": 58
+        },
+        {
+          "doc": "",
+          "name": "ClaimNotActive",
+          "value": 59
+        },
+        {
+          "doc": "",
+          "name": "ClaimFullyStreamed",
+          "value": 60
+        },
+        {
+          "doc": "",
+          "name": "ClaimNotStale",
+          "value": 61
+        },
+        {
+          "doc": "",
+          "name": "CooldownNotPassed",
+          "value": 62
+        },
+        {
+          "doc": "",
+          "name": "NothingVested",
+          "value": 63
+        },
+        {
+          "doc": "",
+          "name": "DailyOutflowCapReached",
+          "value": 64
+        },
+        {
+          "doc": "",
+          "name": "ClaimNotCancellable",
+          "value": 65
+        },
+        {
+          "doc": "",
+          "name": "CallerNotAdminOrCoSigner",
+          "value": 66
+        },
+        {
+          "doc": "",
+          "name": "OverrideParamsMismatch",
+          "value": 67
+        },
+        {
+          "doc": "",
+          "name": "ClaimAlreadyCompleted",
+          "value": 68
+        },
+        {
+          "doc": "",
+          "name": "WalletHasDifferentActiveClaim",
+          "value": 69
+        },
+        {
+          "doc": "",
+          "name": "NoStakeAmountForOverride",
+          "value": 70
+        },
+        {
+          "doc": "",
+          "name": "NoPendingOverride",
+          "value": 71
+        },
+        {
+          "doc": "",
+          "name": "CallerNotAdmin",
+          "value": 72
+        },
+        {
+          "doc": "`deadline` had already passed at submission time.",
+          "name": "SignatureExpired",
+          "value": 73
+        },
+        {
+          "doc": "Oracle attestation pubkey absent from instance storage. The oracle\\nclaim path is fail-closed until admin sets it; the admin path is\\nunaffected.",
+          "name": "OraclePubKeyNotSet",
+          "value": 74
+        },
+        {
+          "doc": "This exact approval payload was revoked by admin before submission.",
+          "name": "ApprovalRevoked",
+          "value": 75
+        },
+        {
+          "doc": "`deadline` is further out than `MAX_APPROVAL_WINDOW_SECONDS`. Bounds\\nhow long one signed approval can stay live, and is what makes the\\nrevocation TTL provably outlive every legal deadline \\xe2\\x80\\x94 see the\\nconst-assert in types.rs.",
+          "name": "SignatureDeadlineTooFar",
+          "value": 76
+        },
+        {
+          "doc": "Contract's liquid XLM balance is below what this transfer needs.\\nPrincipal is not lost \\xe2\\x80\\x94 it is in the yield vault. Admin calls\\n`provide_liquidity` to redeem, then the caller retries.",
+          "name": "InsufficientLiquidity",
+          "value": 80
+        },
+        {
+          "doc": "No vault address configured. Every yield path is fail-closed until\\nadmin calls `set_vault`; the pool simply holds XLM until then.",
+          "name": "VaultNotSet",
+          "value": 81
+        },
+        {
+          "doc": "Deploying this much would exceed `total_staked * deploy_bps`.",
+          "name": "DeployExceedsCeiling",
+          "value": 82
+        },
+        {
+          "doc": "Deploying this much would leave liquid XLM below `total_allocated`,\\ni.e. would put already-reserved claim entitlements into the vault.",
+          "name": "DeployBreachesAllocation",
+          "value": 83
+        },
+        {
+          "doc": "Refused to repoint `Vault` while shares are still held at the old\\none \\xe2\\x80\\x94 the accounting would say deployed while the new vault holds\\nnothing, stranding the position outside contract logic.",
+          "name": "VaultChangeWhileDeployed",
+          "value": 84
+        },
+        {
+          "doc": "Redeem request exceeds the shares this contract actually holds.",
+          "name": "RedeemExceedsDeployed",
+          "value": 85
+        },
+        {
+          "doc": "Amount/share argument was zero or negative.",
+          "name": "AmountNotPositive",
+          "value": 86
+        },
+        {
+          "doc": "`deploy_bps` above `MAX_DEPLOY_BPS`.",
+          "name": "DeployBpsTooHigh",
+          "value": 87
+        },
+        {
+          "doc": "No treasury address configured for yield extraction.",
+          "name": "TreasuryNotSet",
+          "value": 88
+        },
+        {
+          "doc": "Nothing is deployed, so there is nothing to redeem or extract.",
+          "name": "NothingDeployed",
+          "value": 89
+        },
+        {
+          "doc": "Requested yield withdrawal exceeds the excess above staker principal.",
+          "name": "ExceedsYieldBalance",
+          "value": 90
+        },
+        {
+          "doc": "Vault minted fewer shares than the caller's `min_shares_out` floor.",
+          "name": "MinSharesNotMet",
+          "value": 91
+        },
+        {
+          "doc": "Redemption returned less XLM than the caller's `min_xlm_out` floor.",
+          "name": "MinAmountNotMet",
+          "value": 92
+        },
+        {
+          "doc": "Pool is paused. `stake::emergency_exit` and `vault::provide_liquidity`\\nremain callable by design \\xe2\\x80\\x94 they are the pause-time escape path.",
+          "name": "Paused",
+          "value": 93
+        },
+        {
+          "doc": "A wallet already has a `Reserved` claim pending \\xe2\\x80\\x94 one at a time,\\nsame invariant `active_claim_id` already enforces for live claims.",
+          "name": "ClaimAlreadyQueued",
+          "value": 94
+        },
+        {
+          "doc": "`try_release_queued_claim`/`expire_queued_claim` called on a\\n`claim_id` that isn't currently `Reserved`.",
+          "name": "NoSuchQueuedClaim",
+          "value": 95
+        },
+        {
+          "doc": "`try_release_queued_claim` called but the original blocker\\n(`DailyStressCapExceeded`/`Insolvent`) still applies today \\xe2\\x80\\x94 not a\\nfailure, just \"still blocked, try again.\"",
+          "name": "QueueReleaseNotYetEligible",
+          "value": 96
+        },
+        {
+          "doc": "`expire_queued_claim` called before `hack_timestamp +\\nCLAIM_WINDOW_SECONDS` has actually passed.",
+          "name": "QueueNotYetExpired",
+          "value": 97
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Staked",
+      "prefix_topics": [
+        "staked"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "staker",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Withdrawn",
+      "prefix_topics": [
+        "withdrawn"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "staker",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "EmergencyExit",
+      "prefix_topics": [
+        "emergency_exit"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "staker",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Claim",
+      "fields": [
+        {
+          "doc": "NEW 2026-07-22 (Rule A): set when entering `AwaitingApproval`\\n(`now + APPROVE_WINDOW_LEDGERS`). Checked by both `approve_claim`\\n(must call before this) and the permissionless `expire_pending_approval`\\n(may sweep after this). Unused (0) before that state is reached.",
+          "name": "approve_deadline_ledger",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "cooldown_ends_ledger",
+          "type_": "u32"
+        },
+        {
+          "doc": "Total approved payout.",
+          "name": "entitlement",
+          "type_": "i128"
+        },
+        {
+          "doc": "Ledger timestamp of the hack event, validated at submit_claim.",
+          "name": "hack_timestamp",
+          "type_": "u64"
+        },
+        {
+          "doc": "NEW 2026-07-22 (Rule B): set to `cooldown_ends_ledger` \\xe2\\x80\\x94 not the\\napproval ledger \\xe2\\x80\\x94 the moment a claim activates (eng review blocker\\n#2: the mandatory 7-day cooldown must never count as staker\\ninactivity). Updated to `now` on every successful `claim_stream`.\\nChecked by the permissionless `expire_stale_claim`. Unused (0)\\nbefore activation.",
+          "name": "last_collected_ledger",
+          "type_": "u32"
+        },
+        {
+          "doc": "Stake amount captured at submit_claim \\xe2\\x80\\x94 used by cancel_claim to\\nrestore total_staked on a false-positive reversal.",
+          "name": "stake",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "status",
+          "type_": {
+            "udt": {
+              "name": "ClaimStatus"
+            }
+          }
+        },
+        {
+          "doc": "Already streamed to the beneficiary so far.",
+          "name": "streamed",
+          "type_": "i128"
+        },
+        {
+          "doc": "Assessed by the oracle at claim time, included in its signed\\nverdict \\xe2\\x80\\x94 never re-derivable/forgeable client-side.",
+          "name": "tier",
+          "type_": "u32"
+        },
+        {
+          "doc": "CORRECTED 2026-07-14 (second pass, full source read): NOT \"fixed at\\nend of cooldown\" as an earlier note claimed. Activation happens\\nsynchronously \\xe2\\x80\\x94 either inside submit_claim itself (gate already\\nmet) or inside unlock_pending_claim (gate met later) \\xe2\\x80\\x94 and\\ncooldown_ends/vesting_ends are set as FUTURE deadlines starting\\nfrom that same activation moment, not preconditions for it. The\\nsnapshot is total_staked read immediately before THIS claim's own\\nforfeiture decrement, in that same call. Still matters for the\\nsame reason: get the timing wrong and the outflow cap's\\nanti-manipulation guarantee breaks.",
+          "name": "total_staked_snapshot",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "tx_hash",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "vesting_ends_ledger",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address"
+        }
+      ]
+    }
+  },
+  {
+    "udt_enum_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "ClaimStatus",
+      "cases": [
+        {
+          "doc": "",
+          "name": "Unused",
+          "value": 0
+        },
+        {
+          "doc": "",
+          "name": "Active",
+          "value": 1
+        },
+        {
+          "doc": "",
+          "name": "Completed",
+          "value": 2
+        },
+        {
+          "doc": "",
+          "name": "Cancelled",
+          "value": 3
+        },
+        {
+          "doc": "",
+          "name": "Reserved",
+          "value": 4
+        },
+        {
+          "doc": "",
+          "name": "PendingTime",
+          "value": 5
+        },
+        {
+          "doc": "NEW 2026-07-22 (Rule A): 90-day gate met, reservation live, nothing\\nforfeited yet \\xe2\\x80\\x94 waiting on the staker's own `approve_claim` call\\nwithin `APPROVE_WINDOW_LEDGERS`. Replaces the old behavior where\\nmeeting the time gate auto-forfeited the stake with no staker\\naction required.",
+          "name": "AwaitingApproval",
+          "value": 6
+        },
+        {
+          "doc": "NEW 2026-07-22: terminal state for a reservation that lapsed\\nwithout staker action \\xe2\\x80\\x94 either Rule A (never approved in time) or\\nRule B (approved, then went inactive too long during collection).\\nSame downstream handling either way: release whatever's still\\nreserved, stop further action. Distinct from `Cancelled`, which\\nimplies an admin false-positive judgment call and its associated\\npenalty-lock logic \\xe2\\x80\\x94 an expiry is neither party's fault.",
+          "name": "Expired",
+          "value": 7
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "StakeRecord",
+      "fields": [
+        {
+          "doc": "CHANGED 2026-07-22 (eng review, bug 2 fix): was a bare `claim_active:\\nbool`. A bool alone can't distinguish \"re-executing/correcting THIS\\nSAME claim\" from \"wallet already has a DIFFERENT claim in flight\" \\xe2\\x80\\x94\\n`execute_override` needs that distinction to enforce the one-wallet-\\none-claim invariant, which a bool structurally cannot express.\\n`Some(claim_id)` while any claim is open against this stake (blocks\\nwithdrawal, same as the old bool); `None` once terminal\\n(Completed/Cancelled/Expired) or never claimed.",
+          "name": "active_claim_id",
+          "type_": {
+            "option": {
+              "value_type": {
+                "bytes_n": {
+                  "n": 32
+                }
+              }
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "sha256(beneficiary) \\xe2\\x80\\x94 plaintext beneficiary address is never stored.\\nDecided 2026-07-14: sha256 not keccak256 (Soroban-native, consistent\\nwith the Ed25519 oracle-auth decision; no cross-chain hash-matching\\nrequirement exists for this field).",
+          "name": "beneficiary_hash",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "Set by cancel_claim on a false-positive reversal; blocks withdraw\\nfor PENALTY_LOCK_LEDGERS. 0 if never penalized.",
+          "name": "penalty_locked_until_ledger",
+          "type_": "u32"
+        },
+        {
+          "doc": "T3 (2026-08-24): `Some(claim_id)` while a `submit_claim` for this\\nwallet is sitting in `ClaimStatus::Reserved` (rejected for\\n`DailyStressCapExceeded`/`Insolvent`, not yet released or expired).\\nDeliberately separate from `active_claim_id` \\xe2\\x80\\x94 a Reserved claim\\nisn't \"active\" (it holds no capacity reservation: `total_allocated`\\nis untouched until release), but the wallet still can't queue a\\nsecond one without this guard.",
+          "name": "reserved_claim_id",
+          "type_": {
+            "option": {
+              "value_type": {
+                "bytes_n": {
+                  "n": 32
+                }
+              }
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "staked_at_ledger",
+          "type_": "u32"
+        },
+        {
+          "doc": "Real Unix timestamp at stake time \\xe2\\x80\\x94 used ONLY for the absolute\\nhack_timestamp sanity check in submit_claim (\"hack can't predate\\nthe stake\"). staked_at_ledger remains the source of truth for all\\nduration/gate math (time gate, cooldown, vesting, penalty lock).",
+          "name": "staked_at_timestamp",
+          "type_": "u64"
+        },
+        {
+          "doc": "Admin can block payout eligibility; does NOT block principal withdrawal.",
+          "name": "suspended",
+          "type_": "bool"
+        },
+        {
+          "doc": "",
+          "name": "withdrawn",
+          "type_": "bool"
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "OverrideRequest",
+      "fields": [
+        {
+          "doc": "",
+          "name": "co_signer_approver",
+          "type_": {
+            "option": {
+              "value_type": "address"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "entitlement",
+          "type_": "i128"
+        },
+        {
+          "doc": "The actual approving address, not a bare bool \\xe2\\x80\\x94 found via\\nadversarial review (2026-07-14, Solodit \"operator retains power\\nafter removal\" pattern class): a bool can't tell a CURRENT\\nadmin/coSigner's approval apart from a STALE one left over from\\nbefore a set_co_signer/transfer_admin rotation. Readiness is\\nderived by comparing these against the CURRENT admin/coSigner at\\nexecution time, so a rotation automatically invalidates an old\\napproval instead of letting it silently carry forward.",
+          "name": "owner_approver",
+          "type_": {
+            "option": {
+              "value_type": "address"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "tier",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "tx_hash",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "wallet",
+          "type_": "address"
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Deployed",
+      "prefix_topics": [
+        "deployed"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "vault",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "xlm_amount",
+          "type_": "i128",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "shares_gained",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "YieldExtracted",
+      "prefix_topics": [
+        "yield_extracted"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "treasury",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "shares_redeemed",
+          "type_": "i128",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "xlm_received",
+          "type_": "i128",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "yield_amount",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "YieldWithdrawn",
+      "prefix_topics": [
+        "yield_withdrawn"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "treasury",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "LiquidityProvided",
+      "prefix_topics": [
+        "liquidity_provided"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "vault",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "shares_redeemed",
+          "type_": "i128",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "xlm_received",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "Emitted when a redemption returns LESS XLM than the proportional\\nprincipal that was deployed \\xe2\\x80\\x94 i.e. the venue lost money (Blend bad debt\\nor an adverse share-price move).\\n\\nV8 has no equivalent. Its `extractYield` handles the same case only by\\ndeclining to extract (`:912`, `receivedEth > ethEquiv ? ... : 0`), so a\\nprincipal shortfall is silently absorbed and only surfaces much later as\\nan inability to pay a claim. Emitting a distinct event costs nothing and\\nturns a silent loss into something monitorable off-chain. The full\\nremedy is T3 scope; this is the cheap detection half.",
+      "lib": "",
+      "name": "DeploymentShortfall",
+      "prefix_topics": [
+        "deployment_shortfall"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "vault",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "principal_expected",
+          "type_": "i128",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "xlm_received",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "T3 (2026-08-24) \\xe2\\x80\\x94 `auto_deploy_liquidity`'s permissionless-triggered\\npush, the deposit-side mirror of `LiquidityAutoRebalanced`.",
+      "lib": "",
+      "name": "LiquidityAutoDeployed",
+      "prefix_topics": [
+        "liquidity_auto_deployed"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "vault",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "xlm_amount",
+          "type_": "i128",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "shares_gained",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "T3 (2026-08-24) \\xe2\\x80\\x94 `ensure_liquidity`'s permissionless-triggered pull.\\nDistinct from `LiquidityProvided` so on-chain monitoring can tell an\\nautomatic rebalance apart from an admin's manual `provide_liquidity`.",
+      "lib": "",
+      "name": "LiquidityAutoRebalanced",
+      "prefix_topics": [
+        "liquidity_auto_rebalanced"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "vault",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "shares_redeemed",
+          "type_": "i128",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "xlm_received",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "udt_union_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "DataKey",
+      "cases": [
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Admin"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Oracle"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "D1 (T2): the oracle's Ed25519 ATTESTATION identity, stored ALONGSIDE\\n`Oracle` (the policy identity) \\xe2\\x80\\x94 deliberately not a replacement.\\n\\nThe two are not interchangeable and each is load-bearing somewhere\\nthe other cannot serve. `Oracle: Address` is read by the oracle-only\\ndaily claim rate limit (claim.rs), `stake.rs`'s `BeneficiaryIsOracle`\\nguard, and admin's `OracleEqualsCoSigner`/`CoSignerEqualsOracle`\\ninvariants \\xe2\\x80\\x94 a `BytesN<32>` cannot be compared against a beneficiary\\n`Address`, and a contract-type oracle address has no ed25519 pubkey\\nat all. `OraclePubKey` is what `ed25519_verify` needs and an Address\\ncannot supply. Swapping one for the other breaks working code for\\nzero benefit; the cost of keeping both is a few bytes.",
+            "name": "OraclePubKey"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "CoSigner"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "XlmToken"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "Configurable pool cap (V8: `maxPoolSize`) \\xe2\\x80\\x94 admin-adjustable up to\\nwhatever hard ceiling the deployment chooses. Per-staker min/max\\nstake is computed live from this value \\xc3\\x97 MIN_STAKE_BPS/MAX_STAKE_BPS\\n(types.rs), so bounds never need re-anchoring when the cap changes.",
+            "name": "PoolCap"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "TotalStaked"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "TotalAllocated"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "Staker COUNT, separate from TotalStaked (the amount). V8: totalStakers.\\nMissing from the first two build passes \\xe2\\x80\\x94 found on full source read.",
+            "name": "TotalStakers"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Paused"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "DailyOutflow"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "LastOutflowDay"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "Admission-side daily cap tracking (submit_claim) \\xe2\\x80\\x94 separate from the\\npayout-side DailyOutflow/LastOutflowDay (claim_stream) above. V8 uses\\nthree parallel instance vars (dailyEntitlementTotal/lastEntitlementDay/\\ndailyClaimCount) with the same day-rollover pattern, not a per-day\\nkeyed counter \\xe2\\x80\\x94 corrected here after an earlier draft built the wrong\\nmechanism (a temporary-storage ClaimAdmissionCount(u32) key that\\ntracked count only, not the entitlement sum, and didn't match V8's\\nreset semantics).",
+            "name": "DailyEntitlementTotal"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "LastEntitlementDay"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "DailyClaimCount"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "D2 (T2): DeFindex vault address. Deliberately NOT an `initialize`\\nargument and never accepted as a function parameter on any\\nuser-facing path (Soroban vuln checklist #9 \\xe2\\x80\\x94 an attacker-suppliable\\nexternal contract address is an arbitrary-call primitive). Unset\\nuntil admin calls `set_vault`, which is why the whole yield layer is\\nfail-closed on a fresh deploy.",
+            "name": "Vault"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "D2: destination for extracted yield. V8: `treasuryWallet`.",
+            "name": "Treasury"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "D2: max fraction of `total_staked` deployable, in bps. Unset reads\\nas 0, so nothing can be deployed until admin opts in.",
+            "name": "DeployBps"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "D2: vault shares (dfTokens) this contract holds. V8: `totalDeployed`\\n(wstETH units). Tracked locally rather than read from\\n`vault.balance()` at decision time so the accounting stays a pure\\ninternal number \\xe2\\x80\\x94 see `TotalDeployedXlm` for why that matters.",
+            "name": "TotalDeployedShares"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "D2: XLM deployed, valued at ORIGINAL DEPOSIT VALUE, never marked to\\nmarket. V8: `totalDeployedETH`, \"ETH equivalent deployed to Lido\\n(original stake amounts)\" (`SAFUPoolV8.sol:137`).\\n\\nThis convention is what keeps replays deterministic. The vault's\\nshare price is an externally mutable value that drifts between\\ntransactions; marking to market would drag it into the solvency\\ninvariant and reintroduce exactly the hazard the scanner's\\nreputation-feed pinning rule exists to prevent. Held at original\\nvalue, this stays a pure accounting figure and no externally\\nmutable value feeds any payout decision at all.",
+            "name": "TotalDeployedXlm"
+          }
+        },
+        {
+          "void_v0": {
+            "doc": "D2: running sum of XLM sent to treasury. V8: `totalExtractedYield`.",
+            "name": "TotalExtractedYield"
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "",
+            "name": "Stake",
+            "type_": [
+              "address"
+            ]
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "",
+            "name": "ClaimRec",
+            "type_": [
+              {
+                "bytes_n": {
+                  "n": 32
+                }
+              }
+            ]
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "",
+            "name": "Override",
+            "type_": [
+              {
+                "bytes_n": {
+                  "n": 32
+                }
+              }
+            ]
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "Banked points after stake exit \\xe2\\x80\\x94 accumulates across all cycles. V8:\\npointsBalance. Missing from the first two build passes.",
+            "name": "PointsBalance",
+            "type_": [
+              "address"
+            ]
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "D1 (T2): keyed by the sha256 of the approval payload \\xe2\\x80\\x94 the direct\\nanalogue of V8's `revokedApprovals[keccak256(inner)]`. Lives in\\n`temporary()` rather than `persistent()`: a revocation is only\\nmeaningful until the approval's own `deadline` passes, after which\\n`SignatureExpired` rejects that approval regardless. See\\n`types::REVOCATION_TTL_LEDGERS` for why expiry here is safe.",
+            "name": "RevokedApproval",
+            "type_": [
+              {
+                "bytes_n": {
+                  "n": 32
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+]
