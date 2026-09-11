@@ -1,0 +1,690 @@
+[
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "config",
+      "inputs": [],
+      "outputs": [
+        {
+          "udt": {
+            "name": "Config"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Bookkeeping only: the aggregator has already transferred `amount` of `token` in\\nthe same transaction. Passes only for an allowlisted aggregator that is the direct\\ninvoker. A replayed entry could only come from an allowlisted aggregator whose own\\nconfig.treasury is a different contract, so an aggregator is delisted here before its\\ntreasury is ever repointed (\\xc2\\xa75.8).",
+      "name": "credit",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "aggregator",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "partner",
+          "type_": "symbol"
+        },
+        {
+          "doc": "",
+          "name": "token",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Swaps treasury-held `token_in` for `token_out` through an allowlisted aggregator,\\npooled per token, with this contract as the fee-exempt user. Keeper only. The\\nkeeper chooses the route and `min_out`: \\xc2\\xa76.4 states what a stolen key can do.",
+      "name": "convert",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "aggregator",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "token_in",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "amount_in",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "token_out",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "min_out",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "invocations",
+          "type_": {
+            "vec": {
+              "element_type": {
+                "udt": {
+                  "name": "Invocation"
+                }
+              }
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "sweep",
+          "type_": {
+            "vec": {
+              "element_type": "address"
+            }
+          }
+        }
+      ],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "In-place upgrade to an already uploaded wasm. Admin.",
+      "name": "upgrade",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "wasm_hash",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Cumulative gross credited to `partner` in `token`.",
+      "name": "credited",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "partner",
+          "type_": "symbol"
+        },
+        {
+          "doc": "",
+          "name": "token",
+          "type_": "address"
+        }
+      ],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Sends `amount` of `token` to `to`, which must be the payout account, muxed or not.\\nKeeper only. There is no free-destination withdraw; changing the destination is\\nan admin call to `set_payout`.",
+      "name": "withdraw",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "token",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "to",
+          "type_": "muxed_address"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Admin. Also how a stolen keeper key is revoked.",
+      "name": "set_keeper",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "keeper",
+          "type_": "address"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Admin. The only way to change where `withdraw` can send funds.",
+      "name": "set_payout",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "payout",
+          "type_": "address"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Second half: the pending admin signs.",
+      "name": "accept_admin",
+      "inputs": [],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Deploys with the admin, the keeper (api hot key), the payout G-account and the\\ninitial aggregator allowlist (empty at first deploy, see \\xc2\\xa711 deploy order).",
+      "name": "__constructor",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "keeper",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "payout",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "aggregators",
+          "type_": {
+            "vec": {
+              "element_type": "address"
+            }
+          }
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Admin. Idempotent: listing a listed address or delisting an absent one is a no-op.",
+      "name": "set_aggregator",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "aggregator",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "allowed",
+          "type_": "bool"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "First half of the admin rotation. Admin.",
+      "name": "transfer_admin",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_admin",
+          "type_": "address"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "Spec \\xc2\\xa76.3.",
+      "lib": "",
+      "name": "TreasuryError",
+      "cases": [
+        {
+          "doc": "",
+          "name": "NoPendingAdmin",
+          "value": 1
+        },
+        {
+          "doc": "`credit` from, or `convert` through, an address not on the allowlist.",
+          "name": "AggregatorNotAllowed",
+          "value": 2
+        },
+        {
+          "doc": "",
+          "name": "InvalidAmount",
+          "value": 3
+        },
+        {
+          "doc": "`withdraw` destination is not the payout account.",
+          "name": "BadDestination",
+          "value": 4
+        },
+        {
+          "doc": "Config missing. Unreachable after the constructor; kept so the read has no unwrap.",
+          "name": "NotInitialized",
+          "value": 5
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Credit",
+      "prefix_topics": [
+        "credit"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "partner",
+          "type_": "symbol",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "token",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "aggregator",
+          "type_": "address",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Convert",
+      "prefix_topics": [
+        "convert"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "token_in",
+          "type_": "address",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "token_out",
+          "type_": "address",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "amount_in",
+          "type_": "i128",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "amount_out",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Upgraded",
+      "prefix_topics": [
+        "upgraded"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wasm_hash",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Withdraw",
+      "prefix_topics": [
+        "withdraw"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "token",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "to_muxed_id",
+          "type_": {
+            "option": {
+              "value_type": "u64"
+            }
+          },
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "amount",
+          "type_": "i128",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "KeeperSet",
+      "prefix_topics": [
+        "keeper_set"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "keeper",
+          "type_": "address",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "PayoutSet",
+      "prefix_topics": [
+        "payout_set"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "payout",
+          "type_": "address",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "AdminAccept",
+      "prefix_topics": [
+        "admin_accept"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "AdminTransfer",
+      "prefix_topics": [
+        "admin_transfer"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "pend_admin",
+          "type_": "address",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "AggregatorSet",
+      "prefix_topics": [
+        "aggregator_set"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "aggregator",
+          "type_": "address",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "allowed",
+          "type_": "bool",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Config",
+      "fields": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        },
+        {
+          "doc": "Aggregators allowed to `credit` and to be used by `convert`. One or two entries.",
+          "name": "aggregators",
+          "type_": {
+            "vec": {
+              "element_type": "address"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "keeper",
+          "type_": "address"
+        },
+        {
+          "doc": "The G-account every withdrawal goes to, muxed or not.",
+          "name": "payout",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "pend_admin",
+          "type_": {
+            "option": {
+              "value_type": "address"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_union_v0": {
+      "doc": "Variant names at most 9 chars (SymbolSmall). `Cred` is keyed by partner id and token;\\nnever by a muxed address (CAP-0067 forbids it, \\xc2\\xa76.1).",
+      "lib": "",
+      "name": "DataKey",
+      "cases": [
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Config"
+          }
+        },
+        {
+          "tuple_v0": {
+            "doc": "",
+            "name": "Cred",
+            "type_": [
+              "symbol",
+              "address"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "Partner attribution. `bps` is the whole fee the user pays on this swap.",
+      "lib": "",
+      "name": "Partner",
+      "fields": [
+        {
+          "doc": "",
+          "name": "bps",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "id",
+          "type_": "symbol"
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "One nested call the aggregator pre-authorizes on its own behalf before invoking.\\nMirrors the SDK's `ContractContext` (auth.rs:44). One level: no sub-invocations.",
+      "lib": "",
+      "name": "AuthEntry",
+      "fields": [
+        {
+          "doc": "",
+          "name": "args",
+          "type_": {
+            "vec": {
+              "element_type": "val"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "contract",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "fn_name",
+          "type_": "symbol"
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "One venue call. The aggregator is the caller; `args` are venue-specific and opaque.",
+      "lib": "",
+      "name": "Invocation",
+      "fields": [
+        {
+          "doc": "",
+          "name": "args",
+          "type_": {
+            "vec": {
+              "element_type": "val"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "auths",
+          "type_": {
+            "vec": {
+              "element_type": {
+                "udt": {
+                  "name": "AuthEntry"
+                }
+              }
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "contract",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "fn_name",
+          "type_": "symbol"
+        }
+      ]
+    }
+  }
+]

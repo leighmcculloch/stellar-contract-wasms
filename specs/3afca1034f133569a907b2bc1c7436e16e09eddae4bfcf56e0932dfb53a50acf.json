@@ -1,0 +1,674 @@
+[
+  {
+    "function_v0": {
+      "doc": "Stops both swap entrypoints. Admin.",
+      "name": "pause",
+      "inputs": [],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "",
+      "name": "config",
+      "inputs": [],
+      "outputs": [
+        {
+          "udt": {
+            "name": "Config"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Admin.",
+      "name": "unpause",
+      "inputs": [],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "In-place upgrade to an already uploaded wasm. Admin.",
+      "name": "upgrade",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "wasm_hash",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          }
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Sets the protocol fee and the partner floor. Admin.",
+      "name": "set_fees",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "protocol_bps",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "min_partner_bps",
+          "type_": "u32"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Second half: the pending admin signs.",
+      "name": "accept_admin",
+      "inputs": [],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Points fees at another treasury. Admin.",
+      "name": "set_treasury",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "treasury",
+          "type_": "address"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Deploys with the admin, the treasury fees go to, and the two fee dials.",
+      "name": "__constructor",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "treasury",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "protocol_bps",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "min_partner_bps",
+          "type_": "u32"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Swaps exactly `amount_in` of `token_in` for at least `min_out` of `token_out`\\nthrough `invocations`, run with this contract as caller. Returns the amount of\\n`token_out` delivered. Fee in `token_in` per \\xc2\\xa75.3. \\xc2\\xa75.4 lists the steps in order.",
+      "name": "swap_exact_in",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "user",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "token_in",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "amount_in",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "token_out",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "min_out",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "invocations",
+          "type_": {
+            "vec": {
+              "element_type": {
+                "udt": {
+                  "name": "Invocation"
+                }
+              }
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "sweep",
+          "type_": {
+            "vec": {
+              "element_type": "address"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "partner",
+          "type_": {
+            "option": {
+              "value_type": {
+                "udt": {
+                  "name": "Partner"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "Buys at least `amount_out` of `token_out` (everything delivered is paid out) for at\\nmost `max_in` of `token_in`, fee included. The fee is taken on the input the legs\\nconsumed (\\xc2\\xa75.5). Returns the input spent, legs plus fee.",
+      "name": "swap_exact_out",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "user",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "token_in",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "max_in",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "token_out",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "amount_out",
+          "type_": "i128"
+        },
+        {
+          "doc": "",
+          "name": "invocations",
+          "type_": {
+            "vec": {
+              "element_type": {
+                "udt": {
+                  "name": "Invocation"
+                }
+              }
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "sweep",
+          "type_": {
+            "vec": {
+              "element_type": "address"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "partner",
+          "type_": {
+            "option": {
+              "value_type": {
+                "udt": {
+                  "name": "Partner"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "outputs": [
+        "i128"
+      ]
+    }
+  },
+  {
+    "function_v0": {
+      "doc": "First half of the admin rotation. Admin.",
+      "name": "transfer_admin",
+      "inputs": [
+        {
+          "doc": "",
+          "name": "new_admin",
+          "type_": "address"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  {
+    "udt_error_enum_v0": {
+      "doc": "Spec \\xc2\\xa75.6. Numbering is part of the api contract: the api maps codes to messages.",
+      "lib": "",
+      "name": "AggregatorError",
+      "cases": [
+        {
+          "doc": "",
+          "name": "Paused",
+          "value": 1
+        },
+        {
+          "doc": "",
+          "name": "InvalidAmount",
+          "value": 2
+        },
+        {
+          "doc": "",
+          "name": "SameToken",
+          "value": 3
+        },
+        {
+          "doc": "",
+          "name": "PartnerBpsOutOfRange",
+          "value": 4
+        },
+        {
+          "doc": "An invocation target, auth entry contract, sweep address, `token_in` or\\n`token_out` is the aggregator.",
+          "name": "SelfCall",
+          "value": 5
+        },
+        {
+          "doc": "An invocation target, auth entry contract, sweep address, `token_in` or\\n`token_out` is the treasury.",
+          "name": "TreasuryCall",
+          "value": 6
+        },
+        {
+          "doc": "Delivered less than `min_out` (exact-in) or `amount_out` (exact-out).",
+          "name": "InsufficientOutput",
+          "value": 7
+        },
+        {
+          "doc": "Exact-out: the legs consumed no input, or the leftover input cannot cover the fee.",
+          "name": "InsufficientInput",
+          "value": 8
+        },
+        {
+          "doc": "",
+          "name": "NoPendingAdmin",
+          "value": 9
+        },
+        {
+          "doc": "A dial above `MAX_BPS`, or `min_partner_bps < protocol_bps`.",
+          "name": "BpsOutOfRange",
+          "value": 10
+        },
+        {
+          "doc": "`Partner.id` is longer than 9 characters (not a `SymbolSmall`).",
+          "name": "PartnerIdTooLong",
+          "value": 11
+        },
+        {
+          "doc": "Config missing. Unreachable after the constructor; kept so the read has no unwrap.",
+          "name": "NotInitialized",
+          "value": 12
+        }
+      ]
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "One per swap. `#[contractevent]` puts `swap` as the first topic (soroban-sdk-macros\\nderive_event.rs:106), so the three topic fields fill the four-topic limit exactly.",
+      "lib": "",
+      "name": "Swap",
+      "prefix_topics": [
+        "swap"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "token_in",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "token_out",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "",
+          "name": "user",
+          "type_": "address",
+          "location": "topic_list"
+        },
+        {
+          "doc": "Deposit for exact-in; `consumed + fee` for exact-out.",
+          "name": "amount_in",
+          "type_": "i128",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "amount_out",
+          "type_": "i128",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "fee",
+          "type_": "i128",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "partner",
+          "type_": {
+            "option": {
+              "value_type": "symbol"
+            }
+          },
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "FeesSet",
+      "prefix_topics": [
+        "fees_set"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "protocol_bps",
+          "type_": "u32",
+          "location": "data"
+        },
+        {
+          "doc": "",
+          "name": "min_partner_bps",
+          "type_": "u32",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "Upgraded",
+      "prefix_topics": [
+        "upgraded"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "wasm_hash",
+          "type_": {
+            "bytes_n": {
+              "n": 32
+            }
+          },
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "PausedSet",
+      "prefix_topics": [
+        "paused_set"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "paused",
+          "type_": "bool",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "AdminAccept",
+      "prefix_topics": [
+        "admin_accept"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "TreasurySet",
+      "prefix_topics": [
+        "treasury_set"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "treasury",
+          "type_": "address",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "event_v0": {
+      "doc": "",
+      "lib": "",
+      "name": "AdminTransfer",
+      "prefix_topics": [
+        "admin_transfer"
+      ],
+      "params": [
+        {
+          "doc": "",
+          "name": "pend_admin",
+          "type_": "address",
+          "location": "data"
+        }
+      ],
+      "data_format": "map"
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "The one instance entry, read once per swap (\\xc2\\xa75.1).",
+      "lib": "",
+      "name": "Config",
+      "fields": [
+        {
+          "doc": "",
+          "name": "admin",
+          "type_": "address"
+        },
+        {
+          "doc": "Floor for `Partner.bps`; never below `protocol_bps`.",
+          "name": "min_partner_bps",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "paused",
+          "type_": "bool"
+        },
+        {
+          "doc": "",
+          "name": "pend_admin",
+          "type_": {
+            "option": {
+              "value_type": "address"
+            }
+          }
+        },
+        {
+          "doc": "Fee when no partner is given; 0 turns the protocol fee off.",
+          "name": "protocol_bps",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "treasury",
+          "type_": "address"
+        }
+      ]
+    }
+  },
+  {
+    "udt_union_v0": {
+      "doc": "Variant names stay at most 9 chars so the key encodes as a SymbolSmall.",
+      "lib": "",
+      "name": "DataKey",
+      "cases": [
+        {
+          "void_v0": {
+            "doc": "",
+            "name": "Config"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "Partner attribution. `bps` is the whole fee the user pays on this swap.",
+      "lib": "",
+      "name": "Partner",
+      "fields": [
+        {
+          "doc": "",
+          "name": "bps",
+          "type_": "u32"
+        },
+        {
+          "doc": "",
+          "name": "id",
+          "type_": "symbol"
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "One nested call the aggregator pre-authorizes on its own behalf before invoking.\\nMirrors the SDK's `ContractContext` (auth.rs:44). One level: no sub-invocations.",
+      "lib": "",
+      "name": "AuthEntry",
+      "fields": [
+        {
+          "doc": "",
+          "name": "args",
+          "type_": {
+            "vec": {
+              "element_type": "val"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "contract",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "fn_name",
+          "type_": "symbol"
+        }
+      ]
+    }
+  },
+  {
+    "udt_struct_v0": {
+      "doc": "One venue call. The aggregator is the caller; `args` are venue-specific and opaque.",
+      "lib": "",
+      "name": "Invocation",
+      "fields": [
+        {
+          "doc": "",
+          "name": "args",
+          "type_": {
+            "vec": {
+              "element_type": "val"
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "auths",
+          "type_": {
+            "vec": {
+              "element_type": {
+                "udt": {
+                  "name": "AuthEntry"
+                }
+              }
+            }
+          }
+        },
+        {
+          "doc": "",
+          "name": "contract",
+          "type_": "address"
+        },
+        {
+          "doc": "",
+          "name": "fn_name",
+          "type_": "symbol"
+        }
+      ]
+    }
+  }
+]
